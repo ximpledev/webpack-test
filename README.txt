@@ -1,0 +1,4 @@
+- create src, dist folders
+- npm init
+- npm i -D webpack
+- add src/app.js, dist/index.html
