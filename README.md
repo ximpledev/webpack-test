@@ -48,4 +48,21 @@ entry: {
   app: './app.js', // 'app' is chunk name; './' has to be added.
 }
 
+- add fav.js for app.js to import
+var fav = 'Webpack is my fav!';
+module.exports = fav;
+
+- update app.js
+var fav = require('./fav');
+alert(fav);
+
 ==========
+
+- update package.json to use npm scripts
+"scripts": {
+  "start": webpack,
+  ...
+}
+
+- update package.json to use watch mode
+"start": webpack --watch,

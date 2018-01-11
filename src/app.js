@@ -1,1 +1,2 @@
-alert('I love Webpack!');
+var fav = require('./fav');
+alert(fav);
