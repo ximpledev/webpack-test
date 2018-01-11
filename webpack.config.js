@@ -4,7 +4,12 @@ var SRC_DIR  = path.join(__dirname, 'src');
 var DIST_DIR = path.join(__dirname, 'dist');
 
 module.exports = {
-  entry: path.join(SRC_DIR, 'app.js'),
+  // input:
+  context: SRC_DIR,
+  entry: {
+    app: './app.js', // 'app' is chunk name & './' has to be added.
+  },
+  // :input
   output: {
     path: DIST_DIR,
     filename: 'bundle.js'

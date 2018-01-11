@@ -37,5 +37,15 @@ module.exports = {
 
 - terminal> webpack
 
+- add .gitignore
+dist/
+
 ==========
 
+- update webpack.config.js
+context: SRC_DIR,
+entry: {
+  app: './app.js', // 'app' is chunk name; './' has to be added.
+}
+
+==========
