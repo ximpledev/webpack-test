@@ -1,1 +1,1 @@
-alert('I love Webpack!');
+alert('I love Webpack a lot!');
