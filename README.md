@@ -76,10 +76,10 @@ refs: (
   - choose Webpack
 )
 
-- terminal> npm i -D babel-loader babel-core
+- npm i -D babel-loader babel-core
 
-(- terminal> npm i -D babel-preset-es2015) <- told by Matt, but old
-- terminal> npm i -D babel-preset-env
+(- npm i -D babel-preset-es2015) <- told by Matt, but old
+- npm i -D babel-preset-env
 
 - update webpack.config.js
 module: {
@@ -118,8 +118,8 @@ ref... (
   - search 'runtime', click it
 )
 
-- terminal> npm i -D babel-plugin-transform-runtime
-- terminal> npm i -S babel-runtime
+- npm i -D babel-plugin-transform-runtime
+- npm i -S babel-runtime
 
 - update .babelrc
 "plugins": [
@@ -131,3 +131,45 @@ ref... (
 ==========
 
 [webpack-dev-server]
+
+- npm i -D webpack-dev-server
+
+- update package.json
+"start": "webpack-dev-server",
+
+- update webpack.config.js
+devServer: {
+  contentBase: DIST_DIR,
+  inline: true,
+  stats: 'errors-only'
+}
+
+- remove dist/bundle.js
+- npm start
+- http://localhost:8080/
+
+now,
+--watch isn't needed
+after modifying files,
+webpack-dev-server, which serves a webpack bundle without writing it to disk, automatically watches files and refreshes pages for us
+
+==========
+
+[html-webpack-plugin]
+
+- move dist/index.html to src/index.html
+- remove dist folder
+
+- npm i -D html-webpack-plugin
+
+- update src/index.html
+(remove <script src='bundle.js'></script>)
+
+- update webpack.config.js
+var HtmlPlugin = require('html-webpack-plugin');
+...
+plugins: [
+  new HtmlPlugin ({
+    template: path.join(SRC_DIR, 'index.html')
+  })
+]
