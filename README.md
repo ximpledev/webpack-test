@@ -173,3 +173,10 @@ plugins: [
     template: path.join(SRC_DIR, 'index.html')
   })
 ]
+
+==========
+
+[source map]
+
+- update webpack.config.js
+devtool: 'source-map',
