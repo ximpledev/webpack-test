@@ -38,6 +38,7 @@ module.exports = {
 - terminal> webpack
 
 - add .gitignore
+node_modules/
 dist/
 
 ==========
@@ -66,3 +67,67 @@ alert(fav);
 
 - update package.json to use watch mode
 "start": webpack --watch,
+
+==========
+
+refs: (
+  - google babel
+  - click its Docs > Setup
+  - choose Webpack
+)
+
+- terminal> npm i -D babel-loader babel-core
+
+(- terminal> npm i -D babel-preset-es2015) <- told by Matt, but old
+- terminal> npm i -D babel-preset-env
+
+- update webpack.config.js
+module: {
+  rules: [
+    {
+      test: /\.js$/,
+      include: SRC_DIR,
+      //exclude: /node_modules/,
+      loader: "babel-loader"
+    }
+  ]
+}
+
+- add .babelrc
+{
+  "presets": [
+    "env"
+  ]
+}
+
+- change src/fav.js & src/app.js to ES6 syntax
+src/fav.js
+const fav = 'Xup yo, Webpack!';
+export default fav;
+
+src/app.js
+import fav from './fav';
+alert(fav);
+
+==========
+
+[start using babel runtime]
+
+ref... (
+  - Docs > Plugins
+  - search 'runtime', click it
+)
+
+- terminal> npm i -D babel-plugin-transform-runtime
+- terminal> npm i -S babel-runtime
+
+- update .babelrc
+"plugins": [
+  "transform-runtime"
+]
+
+(but we don't know how to check if it's working, just use it)
+
+==========
+
+[webpack-dev-server]

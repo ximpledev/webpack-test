@@ -1,2 +1,2 @@
-var fav = 'Webpack is my fav!';
-module.exports = fav;
+const fav = 'Xup yo, Webpack!';
+export default fav;

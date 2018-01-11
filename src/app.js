@@ -1,2 +1,2 @@
-var fav = require('./fav');
+import fav from './fav';
 alert(fav);

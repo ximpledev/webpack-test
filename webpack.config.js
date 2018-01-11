@@ -13,5 +13,15 @@ module.exports = {
   output: {
     path: DIST_DIR,
     filename: 'bundle.js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include: SRC_DIR,
+        //exclude: /node_modules/,
+        loader: "babel-loader"
+      }
+    ]
   }
 };
