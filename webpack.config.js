@@ -1,21 +1,22 @@
-var path = require('path');
-var HtmlPlugin = require('html-webpack-plugin');
+var path               = require('path');
+var HtmlWebpackPlugin  = require('html-webpack-plugin');
+var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 
-var SRC_DIR  = path.join(__dirname, 'src');
-var DIST_DIR = path.join(__dirname, 'dist');
+var SRC_DIR  = path.resolve(__dirname, 'src');
+var DIST_DIR = path.resolve(__dirname, 'dist');
 
 module.exports = {
   // input:
   context: SRC_DIR,
   entry: {
     app: './app.js', // 'app' is chunk name & './' has to be added.
+    vendor: ['lodash']
   },
   // :input
   output: {
     path: DIST_DIR,
-    filename: 'bundle.js'
+    filename: '[name].[chunkhash].js'
   },
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -26,14 +27,25 @@ module.exports = {
       }
     ]
   },
+  devtool: 'source-map',
   devServer: {
     contentBase: DIST_DIR,
     inline: true,
-    stats: 'errors-only'
+    //stats: 'errors-only'
+    stats: {
+      colors:  true,
+      reasons: true,
+      chunks:  false,
+      modules: false
+    }
   },
   plugins: [
-    new HtmlPlugin ({
-      template: path.join(SRC_DIR, 'index.html')
+    new HtmlWebpackPlugin ({
+      template: path.resolve(SRC_DIR, 'index.html'),
+      inject: 'head' // default: 'body'
+    }),
+    new CommonsChunkPlugin ({
+      names: ['commons', 'vendor', 'bootstrap']
     })
   ]
 };

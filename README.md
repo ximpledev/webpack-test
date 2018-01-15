@@ -24,11 +24,11 @@ alert('I love Webpack!');
 - edit webpack.config.js
 var path = require('path');
 
-var SRC_DIR  = path.join(__dirname, 'src');
-var DIST_DIR = path.join(__dirname, 'dist');
+var SRC_DIR  = path.resolve(__dirname, 'src');
+var DIST_DIR = path.resolve(__dirname, 'dist');
 
 module.exports = {
-  entry: path.join(SRC_DIR, 'app.js'),
+  entry: path.resolve(SRC_DIR, 'app.js'),
   output: {
     path: DIST_DIR,
     filename: 'bundle.js'
@@ -78,7 +78,6 @@ refs: (
 
 - npm i -D babel-loader babel-core
 
-(- npm i -D babel-preset-es2015) <- told by Matt, but old
 - npm i -D babel-preset-env
 
 - update webpack.config.js
@@ -141,7 +140,13 @@ ref... (
 devServer: {
   contentBase: DIST_DIR,
   inline: true,
-  stats: 'errors-only'
+  //stats: 'errors-only'
+  stats: {
+    colors:  true,
+    reasons: true,
+    chunks:  false,
+    modules: false
+  }
 }
 
 - remove dist/bundle.js
@@ -151,7 +156,7 @@ devServer: {
 now,
 --watch isn't needed
 after modifying files,
-webpack-dev-server, which serves a webpack bundle without writing it to disk, automatically watches files and refreshes pages for us
+webpack-dev-server, which serves webpack bundles from memory (not from disk), automatically watches files and refreshes pages for us
 
 ==========
 
@@ -170,7 +175,8 @@ var HtmlPlugin = require('html-webpack-plugin');
 ...
 plugins: [
   new HtmlPlugin ({
-    template: path.join(SRC_DIR, 'index.html')
+    template: path.resolve(SRC_DIR, 'index.html'),
+    inject: 'head' // default: 'body'
   })
 ]
 
@@ -180,3 +186,30 @@ plugins: [
 
 - update webpack.config.js
 devtool: 'source-map',
+
+==========
+
+[commons chunk plugin]
+start using commons chunk plugin
+& [chunkhash]
+where chunkhash isn't necessary for beginners
+
+- update webpack.config.js
+var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
+
+entry: {
+  ...
+  vender: ['lodash']
+},
+
+output: {
+  path: DIST_DIR,
+  filename: '[name].[chunkhash].bundle.js'
+}
+
+plugins: [
+  ...
+  new CommonsChunkPlugin ({
+    name: ['commons', 'vendor', 'bootstrap']
+  })
+]
