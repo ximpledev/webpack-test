@@ -1,9 +1,9 @@
-var path               = require('path');
-var HtmlWebpackPlugin  = require('html-webpack-plugin');
-var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
+const path               = require('path');
+const HtmlWebpackPlugin  = require('html-webpack-plugin');
+const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 
-var SRC_DIR  = path.resolve(__dirname, 'src');
-var DIST_DIR = path.resolve(__dirname, 'dist');
+const SRC_DIR  = path.resolve(__dirname, 'src');
+const DIST_DIR = path.resolve(__dirname, 'dist');
 
 module.exports = {
   // input:
@@ -32,6 +32,7 @@ module.exports = {
   devServer: {
     contentBase: DIST_DIR,
     inline: true,
+    historyApiFallback: true,
     //stats: 'errors-only'
     stats: {
       colors:  true,

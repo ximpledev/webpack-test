@@ -171,6 +171,7 @@ ref... (
 devServer: {
   contentBase: DIST_DIR,
   inline: true,
+  historyApiFallback: true,
   //stats: 'errors-only'
   stats: {
     colors:  true,
@@ -295,7 +296,7 @@ plugins: [
 [React]
 
 > npm i -S react react-dom
-PS, not -D
+PS, React is required for app to run, use -S rather than -D
 
 > npm i -D babel-preset-react
 
