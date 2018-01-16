@@ -15,15 +15,14 @@ module.exports = {
   // :input
   output: {
     path: DIST_DIR,
-    filename: '[name].[chunkhash].js'
+    filename: '[name].bundle.js'
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        include: SRC_DIR,
-        //exclude: /node_modules/,
-        loader: "babel-loader"
+        loader: "babel-loader",
+        include: SRC_DIR
       }
     ]
   },

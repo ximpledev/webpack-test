@@ -85,9 +85,9 @@ module: {
   rules: [
     {
       test: /\.js$/,
-      include: SRC_DIR,
-      //exclude: /node_modules/,
-      loader: "babel-loader"
+      loader: "babel-loader",
+      //exclude: /node_modules/
+      include: SRC_DIR
     }
   ]
 }
@@ -95,9 +95,17 @@ module: {
 - add .babelrc
 {
   "presets": [
-    "env"
+    [
+      "env",
+      {"modules": false}
+    ]
   ]
 }
+
+where "modules": false means it won't transform ES6 module syntax to another module type.
+if we don't use {"modules": false}, default is transforming ES6 module syntax to commonjs.
+
+see PS below
 
 - change src/fav.js & src/app.js to ES6 syntax
 src/fav.js
@@ -107,6 +115,29 @@ export default fav;
 src/app.js
 import fav from './fav';
 alert(fav);
+
+----------
+
+PS,
+if we want to use ES6 module syntax in webpack.config.js
+first, rename webpack.config.js to webpack.config.babel.js
+which means letting babel take care of it.
+but webpack.config.babel.js runs in Node, that is, we have to transform it to commonjs
+
+to sum up,
+if we want to use webpack.config.babel.js
+change .babelrc presets to ["env"] only
+"presets": [
+  "env"
+]
+
+otherwise, use
+"presets": [
+  [
+    "env",
+    {"modules": false}
+  ]
+]
 
 ==========
 
@@ -157,6 +188,25 @@ now,
 --watch isn't needed
 after modifying files,
 webpack-dev-server, which serves webpack bundles from memory (not from disk), automatically watches files and refreshes pages for us
+
+==========
+
+- update package.json
+"scripts": {
+  "start": "webpack-dev-server",
+  "build": "webpack",
+  ...
+}
+
+from now on
+
+cuz 'start' is an npm keyword, 'run' isn't needed,
+> npm start
+to use webpack-dev-server and no 'dist' folder is built
+
+if needed
+> npm run build
+to use webpack to build stuff in 'dist' folder
 
 ==========
 
