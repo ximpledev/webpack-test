@@ -9,8 +9,11 @@ module.exports = {
   // input:
   context: SRC_DIR,
   entry: {
-    app: './app.js', // 'app' is chunk name & './' has to be added.
-    vendor: ['lodash']
+    app: './app.jsx', // 'app' is chunk name & './' has to be added.
+    vendor: [
+      'lodash',
+      'react', 'react-dom'
+    ]
   },
   // :input
   output: {
@@ -20,13 +23,12 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         loader: "babel-loader",
         include: SRC_DIR
       }
     ]
   },
-  devtool: 'source-map',
   devServer: {
     contentBase: DIST_DIR,
     inline: true,
@@ -37,6 +39,10 @@ module.exports = {
       chunks:  false,
       modules: false
     }
+  },
+  devtool: 'source-map',
+  resolve: {
+    extensions: ['.js', '.jsx'] // default: ['.js', '.json']
   },
   plugins: [
     new HtmlWebpackPlugin ({

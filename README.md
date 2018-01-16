@@ -1,6 +1,6 @@
 - create src, dist folders
-- npm init
-- npm i -D webpack
+> npm init
+> npm i -D webpack
 - add src/app.js, dist/index.html
 - add webpack.config.js
 
@@ -76,9 +76,9 @@ refs: (
   - choose Webpack
 )
 
-- npm i -D babel-loader babel-core
+> npm i -D babel-loader babel-core
 
-- npm i -D babel-preset-env
+> npm i -D babel-preset-env
 
 - update webpack.config.js
 module: {
@@ -148,8 +148,8 @@ ref... (
   - search 'runtime', click it
 )
 
-- npm i -D babel-plugin-transform-runtime
-- npm i -S babel-runtime
+> npm i -D babel-plugin-transform-runtime
+> npm i -S babel-runtime
 
 - update .babelrc
 "plugins": [
@@ -162,7 +162,7 @@ ref... (
 
 [webpack-dev-server]
 
-- npm i -D webpack-dev-server
+> npm i -D webpack-dev-server
 
 - update package.json
 "start": "webpack-dev-server",
@@ -181,7 +181,7 @@ devServer: {
 }
 
 - remove dist/bundle.js
-- npm start
+> npm start
 - http://localhost:8080/
 
 now,
@@ -215,7 +215,7 @@ to use webpack to build stuff in 'dist' folder
 - move dist/index.html to src/index.html
 - remove dist folder
 
-- npm i -D html-webpack-plugin
+> npm i -D html-webpack-plugin
 
 - update src/index.html
 (remove <script src='bundle.js'></script>)
@@ -244,6 +244,32 @@ start using commons chunk plugin
 & [chunkhash]
 where chunkhash isn't necessary for beginners
 
+> npm i -S lodash
+PS, not -D
+
+- update app.js (to use lodash)
+import _ from 'lodash';
+import fav from './fav';
+
+let s = '';
+_.forEach (
+  fav,
+  (item) => {
+    s += `${item} `;
+  }
+);
+
+alert(s);
+
+- update fav.js
+const fav = [
+  'Xup',
+  'yo,',
+  'Webpack!'
+];
+
+export default fav;
+
 - update webpack.config.js
 var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 
@@ -263,3 +289,94 @@ plugins: [
     name: ['commons', 'vendor', 'bootstrap']
   })
 ]
+
+==========
+
+[React]
+
+> npm i -S react react-dom
+PS, not -D
+
+> npm i -D babel-preset-react
+
+- update .babelrc
+"presets": [
+  ...
+  "react"
+]
+
+- update index.html
+<div id='main'></div>
+
+- add app.jsx
+console.log('Hello World!');
+
+import React    from 'react';
+import ReactDOM from 'react-dom';
+import Counter  from './counter';
+
+document.addEventListener (
+  'DOMContentLoaded',
+  () => {
+    ReactDOM.render (
+      React.createElement(Counter),
+      document.getElementById('main')
+    );
+  }
+);
+
+- add counter.jsx
+import React from 'react';
+
+class Counter extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      count: 0,
+    };
+  }
+
+  render() {
+    return (
+      <button
+        onClick={() => {
+          this.setState ({
+            count: this.state.count + 1
+          });
+        }}>
+        Count: {this.state.count}
+      </button>
+    );
+  }
+}
+
+export default Counter;
+
+- update webpack.config.js
+
+replace test: /\.js$/
+with test: /\.jsx?$/
+where x? means: matching zero or one x.
+
+module.exports = {
+  ...
+  entry: {
+    app: './app.jsx', // 'app' is chunk name & './' has to be added.
+    vendor: [
+      'lodash',
+      'react', 'react-dom'
+    ]
+  },
+  rules: [
+    {
+      test: /\.jsx?$/,
+      ...
+    }
+  ],
+  ...
+  resolve: {
+    extensions: ['.js', '.jsx'] // default: ['.js', '.json']
+  },
+  ...
+};
