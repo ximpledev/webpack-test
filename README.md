@@ -171,6 +171,8 @@ ref... (
 devServer: {
   contentBase: DIST_DIR,
   inline: true,
+  // historyApiFallback relates to HTML5 histroy API. I don't know how to use it
+  // yet, but just set it to true for now.
   historyApiFallback: true,
   //stats: 'errors-only'
   stats: {
@@ -180,6 +182,35 @@ devServer: {
     modules: false
   }
 }
+
+devServer: {
+  contentBase: DIST_DIR,
+  // Note:
+  // 'inline': true is the default value, so ignore it for now and don't care
+  // about what inline mode & iframe mode are.
+  /*
+  inline: true,
+  */
+  // Note:
+  // When using the HTML5 History API, the index.html page will likely have to
+  // be served in place of any 404 responses. Setting 'historyApiFallback' to
+  // true enables this feature. But don't care about it for now cuz we haven't
+  // used HTML5 History API yet.
+  /*
+  historyApiFallback: true,
+  */
+  // Note:
+  // 'stats' here could be a string or an object. Use string if we want to get
+  // minimal info; use object if we want to get more info.
+  /*
+  stats: 'errors-only'
+  */
+  stats: {
+    chunks: false,
+    modules: false
+  }
+  // :Note
+},
 
 - remove dist/bundle.js
 > npm start
