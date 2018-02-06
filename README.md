@@ -415,3 +415,48 @@ module.exports = {
   },
   ...
 };
+
+==========
+
+[CSS]
+
+> npm i -D css-loader style-loader
+
+- update webpack.config.js
+
+module.exports = {
+  ...
+  modules: {
+    rules: [
+      {
+        ...
+      },
+      {
+        test: /\.css?$/,
+        loader: "style-loader!css-loader",
+        include: SRC_DIR
+      }
+    ]
+  },
+  ...
+}
+
+==========
+
+(optional)
+
+HMR (Hot Module Replacement)
+
+- update webpack.config.js
+
+module.exports = {
+  ...
+  devServer: {
+    ...
+    hot: true
+  },
+  plugins: [
+    ...
+    new new webpack.HotModuleReplacementPlugin()
+  ]
+}

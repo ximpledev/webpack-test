@@ -1,0 +1,16 @@
+.footer {
+  margin: 10px;
+  font-size: 200%
+}
+
+.footer a:link, a:visited {
+  color: darkcyan;
+}
+
+.footer a:hover {
+  color: green;
+}
+
+.footer a:active {
+  color: goldenrod;
+}

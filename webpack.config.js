@@ -21,10 +21,15 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   module: {
-    rules: [
+    loaders: [
       {
         test: /\.jsx?$/,
         loader: "babel-loader",
+        include: SRC_DIR
+      },
+      {
+        test: /\.css?$/,
+        loader: "style-loader!css-loader",
         include: SRC_DIR
       }
     ]
@@ -34,7 +39,8 @@ module.exports = {
     stats: {
       chunks:  false, // default: true
       modules: false  // default: true
-    }
+    },
+    hot: true
   },
   devtool: 'source-map',
   resolve: {
@@ -47,6 +53,7 @@ module.exports = {
     new HtmlWebpackPlugin ({
       template: path.resolve(SRC_DIR, 'index.html'),
       inject: 'head' // default: 'body'
-    })
+    }),
+    new webpack.HotModuleReplacementPlugin()
   ]
 };

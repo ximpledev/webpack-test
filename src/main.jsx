@@ -1,7 +1,9 @@
 import _ from 'lodash';
 import React from 'react';
 
-class Counter extends React.Component {
+import './styles/main.css';
+
+class Main extends React.Component {
   constructor() {
     super();
 
@@ -47,4 +49,4 @@ class Counter extends React.Component {
   }
 }
 
-export default Counter;
+export default Main;
