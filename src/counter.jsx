@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 
 class Counter extends React.Component {
@@ -7,16 +8,39 @@ class Counter extends React.Component {
     this.state = {
       count: 0,
     };
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  componentDidMount() {
+    const fav = [
+      'Xup',
+      'yo,',
+      'Webpack!'
+    ];
+
+    let s = '';
+    _.forEach (
+      fav,
+      (item) => {
+        s += `${item} `;
+      }
+    );
+
+    console.log(s);
+  }
+
+  handleClick() {
+    this.setState ({
+      count: this.state.count + 1
+    });
   }
 
   render() {
     return (
       <button
-        onClick={() => {
-          this.setState ({
-            count: this.state.count + 1
-          });
-        }}>
+        id='counter-button'
+        onClick={this.handleClick}>
         Count: {this.state.count}
       </button>
     );

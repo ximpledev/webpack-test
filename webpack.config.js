@@ -1,6 +1,6 @@
-const path               = require('path');
-const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
-const HtmlWebpackPlugin  = require('html-webpack-plugin');
+const path              = require('path');
+const webpack           = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const SRC_DIR  = path.resolve(__dirname, 'src');
 const DIST_DIR = path.resolve(__dirname, 'dist');
@@ -41,7 +41,7 @@ module.exports = {
     extensions: ['.js', '.jsx'] // default: ['.js', '.json']
   },
   plugins: [
-    new CommonsChunkPlugin ({
+    new webpack.optimize.CommonsChunkPlugin ({
       names: ['commons', 'vendor', 'bootstrap']
     }),
     new HtmlWebpackPlugin ({

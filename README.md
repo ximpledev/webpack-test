@@ -185,12 +185,14 @@ devServer: {
 
 devServer: {
   contentBase: DIST_DIR,
+  
   // Note:
   // 'inline': true is the default value, so ignore it for now and don't care
   // about what inline mode & iframe mode are.
   /*
   inline: true,
   */
+  
   // Note:
   // When using the HTML5 History API, the index.html page will likely have to
   // be served in place of any 404 responses. Setting 'historyApiFallback' to
@@ -199,6 +201,7 @@ devServer: {
   /*
   historyApiFallback: true,
   */
+  
   // Note:
   // 'stats' here could be a string or an object. Use string if we want to get
   // minimal info; use object if we want to get more info.
