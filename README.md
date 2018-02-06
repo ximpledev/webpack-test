@@ -424,22 +424,20 @@ module.exports = {
 
 - update webpack.config.js
 
-module.exports = {
-  ...
-  modules: {
-    rules: [
-      {
-        ...
-      },
-      {
-        test: /\.css?$/,
-        loader: "style-loader!css-loader",
-        include: SRC_DIR
-      }
-    ]
-  },
-  ...
+modules: {
+  rules: [
+    ...,
+    {
+      test: /\.css?$/,
+      loader: "style-loader!css-loader",
+      include: SRC_DIR
+    }
+  ]
 }
+
+from now on, we're able to import CSS file through relative path.
+ex:
+import './styles/footer.css';
 
 ==========
 
@@ -460,3 +458,16 @@ module.exports = {
     new new webpack.HotModuleReplacementPlugin()
   ]
 }
+
+==========
+
+[alias]
+
+- update webpack.config.js
+
+resolve: {
+  ...
+  alias: {
+    styles: path.resolve(SRC_DIR, 'styles')
+  }
+},

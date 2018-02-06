@@ -44,7 +44,10 @@ module.exports = {
   },
   devtool: 'source-map',
   resolve: {
-    extensions: ['.js', '.jsx'] // default: ['.js', '.json']
+    extensions: ['.js', '.jsx'], // default: ['.js', '.json']
+    alias: {
+      styles: path.resolve(SRC_DIR, 'styles')
+    }
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin ({
