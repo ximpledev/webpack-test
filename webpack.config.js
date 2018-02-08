@@ -1,9 +1,10 @@
-const path              = require('path');
-const webpack           = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+var path              = require('path');
+var webpack           = require('webpack');
+var HtmlPlugin        = require('html-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-const SRC_DIR  = path.resolve(__dirname, 'src');
-const DIST_DIR = path.resolve(__dirname, 'dist');
+var SRC_DIR  = path.resolve(__dirname, 'src');
+var DIST_DIR = path.resolve(__dirname, 'dist');
 
 module.exports = {
   // Input:
@@ -21,17 +22,29 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         include: SRC_DIR
       },
+      // Test:
+      /*
       {
         test: /\.css?$/,
-        loader: "style-loader!css-loader",
+        loader: 'style-loader!css-loader',
         include: SRC_DIR
       }
+      */
+      {
+        test: /\.css?$/,
+        loader: ExtractTextPlugin.extract ({
+          fallback: 'style-loader',
+          use: 'css-loader'
+        }),
+        include: SRC_DIR
+      }
+      // :Test
     ]
   },
   devServer: {
@@ -53,10 +66,14 @@ module.exports = {
     new webpack.optimize.CommonsChunkPlugin ({
       names: ['commons', 'vendor', 'bootstrap']
     }),
-    new HtmlWebpackPlugin ({
+    new HtmlPlugin ({
       template: path.resolve(SRC_DIR, 'index.html'),
       inject: 'head' // default: 'body'
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new ExtractTextPlugin ({
+      filename: '[name].bundle.css',
+      allChunks: true
+    })
   ]
 };

@@ -85,7 +85,7 @@ module: {
   rules: [
     {
       test: /\.js$/,
-      loader: "babel-loader",
+      loader: 'babel-loader',
       //exclude: /node_modules/
       include: SRC_DIR
     }
@@ -257,7 +257,7 @@ to use webpack to build stuff in 'dist' folder
 
 - update webpack.config.js
 var HtmlPlugin = require('html-webpack-plugin');
-...
+
 plugins: [
   new HtmlPlugin ({
     template: path.resolve(SRC_DIR, 'index.html'),
@@ -306,7 +306,7 @@ const fav = [
 export default fav;
 
 - update webpack.config.js
-var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
+var webpack = require('webpack');
 
 entry: {
   ...
@@ -316,13 +316,13 @@ entry: {
 output: {
   path: DIST_DIR,
   filename: '[name].[chunkhash].bundle.js'
-}
+},
 
 plugins: [
+  new webpack.optimize.CommonsChunkPlugin ({
+    names: ['commons', 'vendor', 'bootstrap']
+  }),
   ...
-  new CommonsChunkPlugin ({
-    name: ['commons', 'vendor', 'bootstrap']
-  })
 ]
 
 ==========
@@ -394,27 +394,24 @@ replace test: /\.js$/
 with test: /\.jsx?$/
 where x? means: matching zero or one x.
 
-module.exports = {
-  ...
-  entry: {
-    app: './app.jsx', // 'app' is chunk name & './' has to be added.
-    vendor: [
-      'lodash',
-      'react', 'react-dom'
-    ]
-  },
-  rules: [
-    {
-      test: /\.jsx?$/,
-      ...
-    }
-  ],
-  ...
-  resolve: {
-    extensions: ['.js', '.jsx'] // default: ['.js', '.json']
-  },
-  ...
-};
+entry: {
+  app: './app.jsx', // 'app' is chunk name & './' has to be added.
+  vendor: [
+    'lodash',
+    'react', 'react-dom'
+  ]
+},
+
+rules: [
+  {
+    test: /\.jsx?$/,
+    ...
+  }
+],
+
+resolve: {
+  extensions: ['.js', '.jsx'] // default: ['.js', '.json']
+}
 
 ==========
 
@@ -429,7 +426,7 @@ modules: {
     ...,
     {
       test: /\.css?$/,
-      loader: "style-loader!css-loader",
+      loader: 'style-loader!css-loader',
       include: SRC_DIR
     }
   ]
@@ -447,17 +444,15 @@ HMR (Hot Module Replacement)
 
 - update webpack.config.js
 
-module.exports = {
+devServer: {
   ...
-  devServer: {
-    ...
-    hot: true
-  },
-  plugins: [
-    ...
-    new new webpack.HotModuleReplacementPlugin()
-  ]
-}
+  hot: true
+},
+
+plugins: [
+  ...
+  new new webpack.HotModuleReplacementPlugin()
+]
 
 ==========
 
@@ -471,3 +466,60 @@ resolve: {
     styles: path.resolve(SRC_DIR, 'styles')
   }
 },
+
+==========
+
+[extract-text-plugin]
+
+> npm i -D extract-text-webpack-plugin
+
+update webpack.config.js
+
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+replace 
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.css?$/,
+      loader: 'style-loader!css-loader',
+      include: SRC_DIR
+    }
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.css?$/,
+      loader: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: 'css-loader'
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+and then, add
+
+plugins: [
+  ...
+  new ExtractTextPlugin ({
+    filename: '[name].bundle.css',
+    allChunks: true
+  })
+]
+
+hasn't figured out what allChunks is entirely.
+but I know setting 'allChunks: true' makes all CSS not be embedded,
+so just set allChunks: true for now.
+
+also, cuz no CSS be embedded,
+fallback: 'style-loader' in ExtractTextPlugin.extract({}) seems not necessary
+but just keep it.
