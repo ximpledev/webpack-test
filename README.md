@@ -425,7 +425,7 @@ modules: {
   rules: [
     ...,
     {
-      test: /\.css?$/,
+      test: /\.css$/,
       loader: 'style-loader!css-loader',
       include: SRC_DIR
     }
@@ -483,7 +483,7 @@ module: {
   rules: [
     ...
     {
-      test: /\.css?$/,
+      test: /\.css$/,
       loader: 'style-loader!css-loader',
       include: SRC_DIR
     }
@@ -496,7 +496,7 @@ module: {
   rules: [
     ...
     {
-      test: /\.css?$/,
+      test: /\.css$/,
       loader: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
         use: 'css-loader'
@@ -516,10 +516,60 @@ plugins: [
   })
 ]
 
-hasn't figured out what allChunks is entirely.
+hasn't figured out what 'allChunks' is entirely,
 but I know setting 'allChunks: true' makes all CSS not be embedded,
-so just set allChunks: true for now.
+so just set 'allChunks: true' for now.
 
-also, cuz no CSS be embedded,
-fallback: 'style-loader' in ExtractTextPlugin.extract({}) seems not necessary
+also, cuz no CSS are embedded,
+fallback: 'style-loader' in ExtractTextPlugin.extract({}) seems not necessary,
 but just keep it.
+
+==========
+
+[SASS (pre-processors)]
+
+> npm i -D node-sass sass-loader
+
+- update webpack.config.js
+
+replace 
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.css$/,
+      loader: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: 'css-loader'
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      loader: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: 'css-loader!sass-loader'
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+then replace CSS with SCSS
+
+and remember to replace
+
+e.g.
+import 'styles/main.css';
+
+with
+import 'styles/main.scss';

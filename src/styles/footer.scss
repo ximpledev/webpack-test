@@ -1,0 +1,19 @@
+@import './colors';
+
+.footer {
+  margin: 10px;
+  font-size: 200%;
+
+  a:link,
+  a:visited {
+    color: $general-anchor-link-color;
+  }
+
+  a:hover {
+    color: $general-anchor-hover-color;
+  }
+
+  a:active {
+    color: $general-anchor-active-color;
+  }
+}
