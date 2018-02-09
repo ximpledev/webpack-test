@@ -92,7 +92,7 @@ module: {
   ]
 }
 
-- add .babelrc
+- add .babelrc (option 1)
 {
   "presets": [
     [
@@ -102,8 +102,27 @@ module: {
   ]
 }
 
+or
+
+- update package.json (option 2)
+
+"babel": {
+  "presets": [
+    [
+      "env",
+      {"modules": false}
+    ],
+    "react"
+  ],
+  "plugins": [
+    "transform-runtime"
+  ]
+},
+
 where "modules": false means it won't transform ES6 module syntax to another module type.
 if we don't use {"modules": false}, default is transforming ES6 module syntax to commonjs.
+
+(I prefer option 2)
 
 see PS below
 
@@ -573,3 +592,72 @@ import 'styles/main.css';
 
 with
 import 'styles/main.scss';
+
+==========
+
+[PostCSS (autoprefixer)]
+
+> npm i -D autoprefixer postcss-loader
+
+- add postcss.config.js (option 1)
+
+module.exports = {
+  plugins: [
+    require('autoprefixer')
+  ]
+};
+
+or
+
+- update package.json (option 2)
+
+"postcss": {
+  "plugins": {
+    "autoprefixer": {}
+  }
+},
+
+(I prefer option 2)
+
+- update webpack.config.js
+
+replace
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      loader: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: 'css-loader!sass-loader'
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      loader: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: 'css-loader!postcss-loader!sass-loader'
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+- update package.json
+
+add
+
+"browserslist": [
+  "> 1%",
+  "ie > 9"
+],

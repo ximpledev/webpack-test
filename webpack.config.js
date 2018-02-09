@@ -31,10 +31,10 @@ module.exports = {
       // Test:
       /*
       {
-        test: /\.css$/,
+        test: /\.(css|scss|sass)$/,
         loader: ExtractTextPlugin.extract ({
           fallback: 'style-loader',
-          use: 'css-loader'
+          use: 'css-loader!sass-loader'
         }),
         include: SRC_DIR
       }
@@ -43,7 +43,7 @@ module.exports = {
         test: /\.(css|scss|sass)$/,
         loader: ExtractTextPlugin.extract ({
           fallback: 'style-loader',
-          use: 'css-loader!sass-loader'
+          use: 'css-loader!postcss-loader!sass-loader'
         }),
         include: SRC_DIR
       }
