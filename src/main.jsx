@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
 
-//import 'styles/main.css';
 import 'styles/main.scss';
 
 class Main extends React.Component {

@@ -28,17 +28,6 @@ module.exports = {
         loader: 'babel-loader',
         include: SRC_DIR
       },
-      // Test:
-      /*
-      {
-        test: /\.(css|scss|sass)$/,
-        loader: ExtractTextPlugin.extract ({
-          fallback: 'style-loader',
-          use: 'css-loader!sass-loader'
-        }),
-        include: SRC_DIR
-      }
-      */
       {
         test: /\.(css|scss|sass)$/,
         loader: ExtractTextPlugin.extract ({
@@ -46,8 +35,12 @@ module.exports = {
           use: 'css-loader!postcss-loader!sass-loader'
         }),
         include: SRC_DIR
+      },
+      {
+        test: /\.(jpg|png)$/,
+        loader: 'file-loader',
+        include: SRC_DIR
       }
-      // :Test
     ]
   },
   devServer: {
@@ -62,7 +55,8 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'], // default: ['.js', '.json']
     alias: {
-      styles: path.resolve(SRC_DIR, 'styles')
+      styles: path.resolve(SRC_DIR, 'styles'),
+      images: path.resolve(SRC_DIR, 'assets/images')
     }
   },
   plugins: [

@@ -1,5 +1,9 @@
 @import './colors';
 
+body {
+  background: url('~images/test.jpg');
+}
+
 #counter-button {
   margin: 10px;
   padding: 25px;

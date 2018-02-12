@@ -661,3 +661,69 @@ add
   "> 1%",
   "ie > 9"
 ],
+
+==========
+
+[file-loader]
+
+> npm i -D file-loader
+
+(in our sample, the 'file' to load in an image,
+so it's OK to use an image-related loader to load.
+but, for simplicity, we just use file-loader) 
+
+- update webpack.config.js
+
+add
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(jpg|png)$/,
+      loader: 'file-loader',
+      include: SRC_DIR
+    }
+  ]
+}
+
+then...
+if we want to use alias,
+
+- update webpack.config.js
+
+resolve: {
+  alias: {
+    ...
+    images: path.resolve(SRC_DIR, 'assets/images')
+  }
+}
+
+and change our CSS (or SCSS)
+
+for instance,
+
+from 
+
+body {
+  background: url('../assets/images/test.jpg');
+}
+
+to
+
+body {
+  background: url('~images/images/test.jpg');
+}
+
+not
+
+body {
+  background: url('images/images/test.jpg');
+}
+
+cuz CSS always uses relative paths
+if we use url('images/images/test.jpg')
+CSS tries to resolve it to url('./images/images/test.jpg')
+
+but if we put '~' before the path,
+webpack knows we want to use the path in absolute way and will resolves it for us
