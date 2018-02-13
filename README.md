@@ -22,10 +22,10 @@ alert('I love Webpack!');
 ==========
 
 - edit webpack.config.js
-var path = require('path');
+const path = require('path');
 
-var SRC_DIR  = path.resolve(__dirname, 'src');
-var DIST_DIR = path.resolve(__dirname, 'dist');
+const SRC_DIR  = path.resolve(__dirname, 'src');
+const DIST_DIR = path.resolve(__dirname, 'dist');
 
 module.exports = {
   entry: path.resolve(SRC_DIR, 'app.js'),
@@ -275,7 +275,7 @@ to use webpack to build stuff in 'dist' folder
 (remove <script src='bundle.js'></script>)
 
 - update webpack.config.js
-var HtmlPlugin = require('html-webpack-plugin');
+const HtmlPlugin = require('html-webpack-plugin');
 
 plugins: [
   new HtmlPlugin ({
@@ -325,7 +325,7 @@ const fav = [
 export default fav;
 
 - update webpack.config.js
-var webpack = require('webpack');
+const webpack = require('webpack');
 
 entry: {
   ...
@@ -494,7 +494,7 @@ resolve: {
 
 update webpack.config.js
 
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 replace 
 
@@ -680,12 +680,15 @@ module: {
   rules: [
     ...
     {
-      test: /\.(jpg|png)$/,
+      test: /\.(jpe?g|png)$/,
       loader: 'file-loader',
       include: SRC_DIR
     }
   ]
 }
+
+where jpe?g means matching 'e' 0 or 1 time,
+that is, jpe?g = jpg or jpeg
 
 then...
 if we want to use alias,
@@ -721,9 +724,134 @@ body {
   background: url('images/images/test.jpg');
 }
 
-cuz CSS always uses relative paths
+cuz CSS uses relative paths
 if we use url('images/images/test.jpg')
 CSS tries to resolve it to url('./images/images/test.jpg')
 
 but if we put '~' before the path,
 webpack knows we want to use the path in absolute way and will resolves it for us
+
+==========
+
+[minify]
+
+- update webpack.config.js
+
+add query ?minimize to css-loader
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      loader: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        //use: 'css-loader!postcss-loader!sass-loader'
+        use: 'css-loader?minimize!postcss-loader!sass-loader'
+      }),
+      include: SRC_DIR
+    },
+    ...
+  ]
+}
+
+done.
+
+==========
+
+[build script]
+
+- update package.json
+
+change
+
+"scripts": {
+  "start": "webpack-dev-server",
+  "build": "webpack",
+  ...
+},
+
+to
+
+"scripts": {
+  "start": "set NODE_ENV=development && webpack-dev-server",
+  "build": "set NODE_ENV=production && webpack -p",
+  ...
+},
+
+where -p is a shortcut for production,
+which equals to --optimize-minimize --optimize-occurrence-order
+where --optimize-minimize equals new webpack.optimize.UglifyJsPlugin()
+
+a little complicated, but it's OK, just use -p
+
+----------
+
+PS,
+npm scripts are different in Windows & Linux,
+in Linux, we just need to set...
+
+"scripts": {
+  "start": "NODE_ENV=development webpack-dev-server",
+  "build": "NODE_ENV=production webpack -p",
+  ...
+},
+
+- update webpack.config.js
+
+add
+
+const isProduction = (process.env.NODE_ENV==='production') ? true : false;
+const processCss = isProduction ? '?minimize!postcss-loader' : '';
+
+replace
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      loader: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: 'css-loader?minimize!postcss-loader!sass-loader'
+      }),
+      include: SRC_DIR
+    },
+    ...
+  ]
+]
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      loader: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: `css-loader${processCss}!sass-loader`
+      }),
+      include: SRC_DIR
+    },
+    ...
+  ]
+]
+
+to minify CSS & use PostCSS only in production mode
+
+besides,
+
+plugins: [
+  ...
+  new ExtractTextPlugin ({
+    filename: '[name].bundle.css',
+    allChunks: true,
+    //disable: !isProduction
+  })
+]
+
+we can use extract-text-plugin only in production mode as well
+by disable: !isProduction
+but I want to extract text whether in production or development mode
+so I comment it out.

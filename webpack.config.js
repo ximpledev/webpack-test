@@ -1,10 +1,13 @@
-var path              = require('path');
-var webpack           = require('webpack');
-var HtmlPlugin        = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path              = require('path');
+const webpack           = require('webpack');
+const HtmlPlugin        = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var SRC_DIR  = path.resolve(__dirname, 'src');
-var DIST_DIR = path.resolve(__dirname, 'dist');
+const SRC_DIR  = path.resolve(__dirname, 'src');
+const DIST_DIR = path.resolve(__dirname, 'dist');
+
+const isProduction = (process.env.NODE_ENV==='production') ? true : false;
+const processCss = isProduction ? '?minimize!postcss-loader' : '';
 
 module.exports = {
   // Input:
@@ -32,12 +35,13 @@ module.exports = {
         test: /\.(css|scss|sass)$/,
         loader: ExtractTextPlugin.extract ({
           fallback: 'style-loader',
-          use: 'css-loader!postcss-loader!sass-loader'
+          //use: 'css-loader!postcss-loader!sass-loader'
+          use: `css-loader${processCss}!sass-loader`
         }),
         include: SRC_DIR
       },
       {
-        test: /\.(jpg|png)$/,
+        test: /\.(jpe?g|png)$/,
         loader: 'file-loader',
         include: SRC_DIR
       }
@@ -70,7 +74,8 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new ExtractTextPlugin ({
       filename: '[name].bundle.css',
-      allChunks: true
+      allChunks: true,
+      //disable: !isProduction
     })
   ]
 };
