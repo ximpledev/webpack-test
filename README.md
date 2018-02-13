@@ -85,7 +85,7 @@ module: {
   rules: [
     {
       test: /\.js$/,
-      loader: 'babel-loader',
+      use: ['babel-loader'],
       //exclude: /node_modules/
       include: SRC_DIR
     }
@@ -445,7 +445,7 @@ modules: {
     ...,
     {
       test: /\.css$/,
-      loader: 'style-loader!css-loader',
+      use: ['style-loader', 'css-loader'],
       include: SRC_DIR
     }
   ]
@@ -503,7 +503,7 @@ module: {
     ...
     {
       test: /\.css$/,
-      loader: 'style-loader!css-loader',
+      use: ['style-loader', 'css-loader'],
       include: SRC_DIR
     }
   ]
@@ -516,7 +516,7 @@ module: {
     ...
     {
       test: /\.css$/,
-      loader: ExtractTextPlugin.extract ({
+      use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
         use: 'css-loader'
       }),
@@ -558,7 +558,7 @@ module: {
     ...
     {
       test: /\.css$/,
-      loader: ExtractTextPlugin.extract ({
+      use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
         use: 'css-loader'
       }),
@@ -574,9 +574,9 @@ module: {
     ...
     {
       test: /\.(css|scss|sass)$/,
-      loader: ExtractTextPlugin.extract ({
+      use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
-        use: 'css-loader!sass-loader'
+        use: ['css-loader', 'sass-loader']
       }),
       include: SRC_DIR
     }
@@ -628,9 +628,9 @@ module: {
     ...
     {
       test: /\.(css|scss|sass)$/,
-      loader: ExtractTextPlugin.extract ({
+      use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
-        use: 'css-loader!sass-loader'
+        use: ['css-loader', 'sass-loader']
       }),
       include: SRC_DIR
     }
@@ -644,9 +644,9 @@ module: {
     ...
     {
       test: /\.(css|scss|sass)$/,
-      loader: ExtractTextPlugin.extract ({
+      use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
-        use: 'css-loader!postcss-loader!sass-loader'
+        use: ['css-loader', 'postcss-loader', 'sass-loader']
       }),
       include: SRC_DIR
     }
@@ -681,7 +681,7 @@ module: {
     ...
     {
       test: /\.(jpe?g|png)$/,
-      loader: 'file-loader',
+      use: ['file-loader'],
       include: SRC_DIR
     }
   ]
@@ -737,17 +737,44 @@ webpack knows we want to use the path in absolute way and will resolves it for u
 
 - update webpack.config.js
 
-add query ?minimize to css-loader
+use css-loader options
+
+replace
 
 module: {
   rules: [
     ...
     {
       test: /\.(css|scss|sass)$/,
-      loader: ExtractTextPlugin.extract ({
+      use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
-        //use: 'css-loader!postcss-loader!sass-loader'
-        use: 'css-loader?minimize!postcss-loader!sass-loader'
+        use: ['css-loader', 'postcss-loader', 'sass-loader']
+      }),
+      include: SRC_DIR
+    },
+    ...
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: [
+          {
+            loader: 'css-loader',
+            options: {
+              minimize: true
+            }
+          },
+          'postcss-loader',
+          'sass-loader'
+        ]
       }),
       include: SRC_DIR
     },
@@ -801,8 +828,7 @@ in Linux, we just need to set...
 
 add
 
-const isProduction = (process.env.NODE_ENV==='production') ? true : false;
-const processCss = isProduction ? '?minimize!postcss-loader' : '';
+const inProductionMode = (process.env.NODE_ENV==='production') ? true : false;
 
 replace
 
@@ -811,9 +837,18 @@ module: {
     ...
     {
       test: /\.(css|scss|sass)$/,
-      loader: ExtractTextPlugin.extract ({
+      use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
-        use: 'css-loader?minimize!postcss-loader!sass-loader'
+        use: [
+          {
+            loader: 'css-loader',
+            options: {
+              minimize: true
+            }
+          },
+          'postcss-loader',
+          'sass-loader'
+        ]
       }),
       include: SRC_DIR
     },
@@ -828,9 +863,28 @@ module: {
     ...
     {
       test: /\.(css|scss|sass)$/,
-      loader: ExtractTextPlugin.extract ({
+      use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
-        use: `css-loader${processCss}!sass-loader`
+        use: (
+          // Part 1.
+          !inProductionMode ?
+          // Part 2.
+          [
+            'css-loader',
+            'sass-loader'
+          ] :
+          // Part 3.
+          [
+            {
+              loader: 'css-loader',
+              options: {
+                minimize: true
+              }
+            },
+            'postcss-loader',
+            'sass-loader'
+          ]
+        )
       }),
       include: SRC_DIR
     },
@@ -847,11 +901,11 @@ plugins: [
   new ExtractTextPlugin ({
     filename: '[name].bundle.css',
     allChunks: true,
-    //disable: !isProduction
+    //disable: !inProductionMode
   })
 ]
 
 we can use extract-text-plugin only in production mode as well
-by disable: !isProduction
+by disable: !inProductionMode
 but I want to extract text whether in production or development mode
 so I comment it out.

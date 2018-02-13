@@ -6,8 +6,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const SRC_DIR  = path.resolve(__dirname, 'src');
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
-const isProduction = (process.env.NODE_ENV==='production') ? true : false;
-const processCss = isProduction ? '?minimize!postcss-loader' : '';
+const inProductionMode = (process.env.NODE_ENV==='production') ? true : false;
 
 module.exports = {
   // Input:
@@ -28,21 +27,39 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
+        use: ['babel-loader'],
         include: SRC_DIR
       },
       {
         test: /\.(css|scss|sass)$/,
-        loader: ExtractTextPlugin.extract ({
+        use: ExtractTextPlugin.extract ({
           fallback: 'style-loader',
-          //use: 'css-loader!postcss-loader!sass-loader'
-          use: `css-loader${processCss}!sass-loader`
+          use: (
+            // Part 1.
+            !inProductionMode ?
+            // Part 2.
+            [
+              'css-loader',
+              'sass-loader'
+            ] :
+            // Part 3.
+            [
+              {
+                loader: 'css-loader',
+                options: {
+                  minimize: true
+                }
+              },
+              'postcss-loader',
+              'sass-loader'
+            ]
+          )
         }),
         include: SRC_DIR
       },
       {
         test: /\.(jpe?g|png)$/,
-        loader: 'file-loader',
+        use: ['file-loader'],
         include: SRC_DIR
       }
     ]
