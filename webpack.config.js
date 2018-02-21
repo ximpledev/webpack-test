@@ -6,7 +6,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const SRC_DIR  = path.resolve(__dirname, 'src');
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
-const inProductionMode = (process.env.NODE_ENV==='production') ? true : false;
+console.log(`process.env.NODE_ENV: '${process.env.NODE_ENV}'`);
+
+const env = process.env.NODE_ENV || 'development';
+console.log(`env: '${env}'`);
+
+const inProductionMode = (env.trim()==='production') ? true : false;
 
 module.exports = {
   // Input:
@@ -36,7 +41,7 @@ module.exports = {
           fallback: 'style-loader',
           use: (
             // Part 1.
-            !inProductionMode ?
+            (!inProductionMode) ?
             // Part 2.
             [
               'css-loader',

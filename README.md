@@ -733,11 +733,13 @@ webpack knows we want to use the path in absolute way and will resolves it for u
 
 ==========
 
-[minify]
+[minify CSS]
+
+there're 2 ways to minify CSS.
+
+1. use css-loader options
 
 - update webpack.config.js
-
-use css-loader options
 
 replace
 
@@ -782,7 +784,12 @@ module: {
   ]
 }
 
-done.
+2. use 'webpack -p' in package.json,
+where -p switches webpack loaders to minimize mode.
+
+see [build script] below for further explanation.
+
+I prefer solution 2.
 
 ==========
 
@@ -801,16 +808,37 @@ change
 to
 
 "scripts": {
-  "start": "set NODE_ENV=development && webpack-dev-server",
-  "build": "set NODE_ENV=production && webpack -p",
+  "start": "set NODE_ENV=development && webpack-dev-server --progress",
+  "build": "set NODE_ENV=production && webpack -p --progress",
   ...
 },
 
 where -p is a shortcut for production,
 which equals to --optimize-minimize --optimize-occurrence-order
-where --optimize-minimize equals new webpack.optimize.UglifyJsPlugin()
+where --optimize-minimize minimizes JS and switches loaders (such as: CSS) to minimize mode
 
-a little complicated, but it's OK, just use -p
+a little complicated, but it's OK, just use -p for production.
+
+and --progress prints compilation progress in percentage
+
+----------
+
+PS,
+"set NODE_ENV=production && webpack-dev-server" adds a trailing space to the variable.
+that is, NODE_ENV will become 'production ', not 'production'
+
+to solve this, 2 solutions:
+
+1.
+use "set NODE_ENV=production&&webpack-dev-server" or
+use "set NODE_ENV=production&& webpack-dev-server"
+
+2. in webpack.config.js, use trim() to trim spaces,
+for instance,
+const env = process.env.NODE_ENV || 'development';
+const inProductionMode = (env.trim()==='production') ? true : false;
+
+I prefer solution 2.
 
 ----------
 
@@ -819,8 +847,8 @@ npm scripts are different in Windows & Linux,
 in Linux, we just need to set...
 
 "scripts": {
-  "start": "NODE_ENV=development webpack-dev-server",
-  "build": "NODE_ENV=production webpack -p",
+  "start": "NODE_ENV=development webpack-dev-server --progress",
+  "build": "NODE_ENV=production webpack -p --progress",
   ...
 },
 
@@ -828,7 +856,8 @@ in Linux, we just need to set...
 
 add
 
-const inProductionMode = (process.env.NODE_ENV==='production') ? true : false;
+const env = process.env.NODE_ENV || 'development';
+const inProductionMode = (env.trim()==='production') ? true : false;
 
 replace
 
@@ -909,3 +938,83 @@ we can use extract-text-plugin only in production mode as well
 by disable: !inProductionMode
 but I want to extract text whether in production or development mode
 so I comment it out.
+
+==========
+
+[cross-env]
+
+when using npm scripts on Windows
+for instance,
+
+"scripts": {
+  "start": "set NODE_ENV=development && webpack-dev-server",
+  ...
+},
+
+we have to add 'set' before NODE_ENV
+but on Mac, we don't
+
+that is, it's OK to write the snippet below
+"scripts": {
+  "start": "NODE_ENV=development webpack-dev-server",
+  ...
+},
+
+in order not to write two version of start (or any other scripts),
+use 'cross-env', which is a Node package.
+
+> npm i -D cross-env
+
+- update package.json
+
+from
+
+"scripts": {
+  "start": "set NODE_ENV=development && webpack-dev-server",
+  ...
+}
+
+to
+
+"scripts": {
+  "start": "cross-env NODE_ENV=development webpack-dev-server",
+  ...
+}
+
+be careful,
+not only replace 'set' with 'cross-env',
+but remove '&&' as well,
+or it won't work
+
+------
+
+PS,
+cross-env is a cross-platform solution for setting environment variable, such as: NODE_ENV
+
+Similarly, Windows Command Prompt (cmd) has no 'rm' command
+and there's a cross-platform solution for 'rm', called 'rimraf'
+
+but cuz we use Git Bash, not cmd
+it's OK to use 'rm'
+
+==========
+
+[refactor npm scripts]
+
+- update package.json
+
+"scripts": {
+  "clean": "rm -rf ./dist",
+  "build:dev": "cross-env NODE_ENV=development webpack-dev-server --progress",
+  "build:prod": "cross-env NODE_ENV=production webpack -p --progress",
+  "start": "npm run build:dev",
+  "build": "npm run clean && npm run build:prod",
+  ...
+},
+
+and then
+we're able to use
+> npm start
+to run the program in development mode, and
+> npm run build
+to run the program in production mode.
