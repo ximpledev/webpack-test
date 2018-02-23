@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build:dev": "webpack-dev-server",
-    "build:prod": "webpack --env.prod -p --color --progress",
+    "build:prod": "webpack --env.prod -p --colors --progress",
     "start": "npm run build:dev",
     "build": "npm run clean && npm run build:prod",
     "test": "echo \"Error: no test specified\" && exit 1"

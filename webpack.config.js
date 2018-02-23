@@ -1,5 +1,5 @@
 const path              = require('path');
-const webpack           = require('webpack');
+const Webpack           = require('webpack');
 const HtmlPlugin        = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
@@ -13,16 +13,17 @@ module.exports = (env={}) => {
   const isProduction = (env.prod===true) ? true : false;
 
   return {
-    // Input:
+    // #region Input
     context: SRC_DIR,
     entry: {
       app: './app.jsx', // 'app' is chunk name & './' has to be added.
       vendor: [
-        'lodash',
-        'react', 'react-dom'
+        'react', 'react-dom',
+        'lodash'
       ]
     },
-    // :Input
+    // #endregion
+
     output: {
       path: DIST_DIR,
       filename: (
@@ -80,16 +81,20 @@ module.exports = (env={}) => {
     devServer: {
       contentBase: DIST_DIR,
       stats: {
+        colors:  true,  // default: true
         chunks:  false, // default: true
         modules: false  // default: true
       },
-      // Test: To use [chunkhash].
-
-      hot: true,
-
-      progress: true
+      progress: true    // default: false
     },
-    devtool: (!isProduction) ? 'source-map' : 'hidden-source-map',
+    devtool: (
+      // Part 1.
+      !isProduction ?
+      // Part 2: dev.
+      'source-map' :
+      // Part 3: prod.
+      'hidden-source-map'
+    ),
     resolve: {
       extensions: ['.js', '.jsx'], // default: ['.js', '.json']
       alias: {
@@ -98,17 +103,13 @@ module.exports = (env={}) => {
       }
     },
     plugins: [
-      new webpack.optimize.CommonsChunkPlugin ({
+      new Webpack.optimize.CommonsChunkPlugin ({
         names: ['commons', 'vendor', 'manifest']
       }),
       new HtmlPlugin ({
         template: path.resolve(SRC_DIR, 'index.html'),
         inject: 'head' // default: 'body'
       }),
-      // Test: To use [chunkhash].
-
-      new webpack.HotModuleReplacementPlugin(),
-
       new ExtractTextPlugin ({
         filename: (
           // Part 1.

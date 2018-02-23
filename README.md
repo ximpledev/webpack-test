@@ -325,7 +325,7 @@ const fav = [
 export default fav;
 
 - update webpack.config.js
-const webpack = require('webpack');
+const Webpack = require('webpack');
 
 entry: {
   ...
@@ -338,7 +338,7 @@ output: {
 },
 
 plugins: [
-  new webpack.optimize.CommonsChunkPlugin ({
+  new Webpack.optimize.CommonsChunkPlugin ({
     names: ['commons', 'vendor', 'manifest']
   }),
   ...
@@ -475,7 +475,7 @@ devServer: {
 
 plugins: [
   ...
-  new new webpack.HotModuleReplacementPlugin()
+  new new Webpack.HotModuleReplacementPlugin()
 ]
 
 PS,
@@ -484,6 +484,15 @@ HMR must be disabled, or compilation will fail.
 
 PS,
 it's OK to use [hash/contenthash] when HMR is enabled.
+
+PS,
+[hash] is used by file-loader
+[contenthash] is used by extract-text-plugin
+
+PS,
+cuz using HMR makes [chunkhash] useless and I possibly want to use [chunkhash],
+plus HMR is a bit complicated to set up,
+so I prefer not to use HMR
 
 ==========
 
@@ -1306,10 +1315,13 @@ plugins: [
 [webpack.config.js vs. CLI]
 
 webpack & webpack-dev-server have many similar options, which are useful
-such as: --color & --progress
+such as: --colors & --progress
 
-but they have their own defaults, and more complicated reasons...
-plus, those options are convenient, not crucial
+but 1. they have their own defaults
+
+and 2. webpack -p is a very useful shortcut (which has been mentioned above)
+
+plus, 3. those options are convenient, not crucial
 
 so here's my conclusion!
 
@@ -1317,27 +1329,56 @@ cuz in webpack.config.js, there's a devServer to config
 move webpack-dev-server CLI to webpack.config.js
 and let webpack uses CLI
 
---color
+--colors
 
-webpack-dev-server uses --color=true as default, 
-we don't have to enable it in webpack.config.js
+webpack uses --colors=false as default
+enable it using webpack CLI
 
-but webpack uses --color=false as default,
-so enable it using webpack CLI
+webpack-dev-server uses --colors=true as default, 
+but, for consistency, we still enable it in webpack.config.js
 
-> webpack --env.prod -p --color
+devServer: {
+  ...
+  stats: {
+    colors: true, // default: true
+    ...
+  }
+  ...
+}
+
+> webpack --env.prod -p --colors
 
 --progress
 
-webpack-dev-server uses --progress=false as default,
+webpack-dev-server uses --progress=false as default
 enable it in webpack.config.js
 
 devServer: {
   ...
   progress: true
+  ...
 },
 
 webpack also uses --progress=false as default,
 enable it using webpack CLI
 
-> webpack --env.prod -p --color --progress
+> webpack --env.prod -p --colors --progress
+
+PS,
+--color & --colors are both OK in webpack & webpack-dev-server CLI
+but in webpack.config.js
+
+devServer: {
+  ...
+  stats: {
+    colors: true, //color: true,
+    ...
+  }
+}
+
+stats only knows colors, not color
+if we use color, nothing will happen
+and it just uses the default value, which is --colors=true
+
+so uniformly, I prefer using --colors for both webpack & webpack-dev-server
+
