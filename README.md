@@ -293,10 +293,10 @@ devtool: 'source-map',
 
 ==========
 
-[commons chunk plugin]
-start using commons chunk plugin
-& [chunkhash]
-where chunkhash isn't necessary for beginners
+[caching]
+
+start using commons-chunk-plugin
+with the help of [chunkhash]
 
 > npm i -S lodash
 PS, not -D
@@ -325,7 +325,7 @@ const fav = [
 export default fav;
 
 - update webpack.config.js
-const Webpack = require('webpack');
+const webpack = require('webpack');
 
 entry: {
   ...
@@ -338,16 +338,146 @@ output: {
 },
 
 plugins: [
-  new Webpack.optimize.CommonsChunkPlugin ({
-    names: ['commons', 'vendor', 'manifest']
+  new webpack.optimize.CommonsChunkPlugin ({
+    names: ['app', 'vendor', 'manifest']
   }),
   ...
 ]
 
 where the name 'manifest' (instead of 'bootstrap', used by Matt) is commonly used.
 
+PS,
+after my experiments,
+
+plugins: [
+  new webpack.optimize.CommonsChunkPlugin ({
+    names: ['app', 'vendor', 'manifest']
+  }),
+  ...
+]
+
+plugins: [
+  new webpack.optimize.CommonsChunkPlugin ({
+    names: ['commons', 'vendor', 'manifest']
+  }),
+  ...
+]
+
+and even
+
+plugins: [
+  new webpack.optimize.CommonsChunkPlugin ({
+    names: ['vendor', 'manifest']
+  }),
+  ...
+]
+
+all three names have same result, use any one you like
+
+and be careful, the order matters!
+'vendor' must be included prior to 'manifest'
+
+I prefer
+plugins: [
+  new webpack.optimize.CommonsChunkPlugin ({
+    names: ['app', 'vendor', 'manifest']
+  }),
+  ...
+]
+
+PS,
+the name prior to 'vendor',
+whether it's 'app', 'commons', or other name: 'app2', 'app123', etc.
+doesn't matter, they all have the same result
+
+PS,
+I want to name it Webpack, that is,
+
+const Webpack = require('webpack');
+
+but in Webpack's source code,
+it uses webpack, so I use
+
+const webpack = require('webpack');
+
+like what webpack docs do
+
+-----
+
+[HashedModuleIdsPlugin]
+
+if we change the content of, for instance, app.js
+
+app.bundle.js and manifest.bundle.js change as well
+vector remains the same
+as we expected
+
+but if we add/remove some files,
+for instance, remove fav.js and add fav2.js with same content
+
+in app.js
+import fav from './fav2';
+
+then, even vendor's content doesn't change
+vendor.bundle.js changes
+
+to solve this,
+there are two plugins to use:
+NamedModulesPlugin or HashedModuleIdsPlugin
+just use HashedModuleIdsPlugin
+
+- update webpack.config.js
+
+plugins: [
+  new webpack.optimize.CommonsChunkPlugin ({
+    names: ['app', 'vendor', 'manifest']
+  }),
+  new webpack.HashedModuleIdsPlugin(),
+  ...
+]
+
+problem solved!
+
 ref:
-https://webpack.js.org/plugins/commons-chunk-plugin/
+https://webpack.js.org/guides/caching/
+
+PS,
+if we want to 1. set the file names different to chunk names
+or 2. want to set more options
+
+split one CommonsChunkPlugin
+
+plugins: [
+  new webpack.optimize.CommonsChunkPlugin ({
+    names: ['app', 'vendor', 'manifest']
+  }),
+  new webpack.HashedModuleIdsPlugin(),
+  ...
+]
+
+into multiple CommonsChunkPlugin
+
+for instance,
+plugins: [
+  new webpack.optimize.CommonsChunkPlugin ({
+    name: 'app',
+    filename: 'app2.js'
+  }),
+  new webpack.optimize.CommonsChunkPlugin ({
+    name: 'vendor',
+    filename: 'vendor2.js',
+    //minChunks: Infinity
+  }),
+  new webpack.optimize.CommonsChunkPlugin ({
+    name: 'manifest',
+    filename: 'manifest2.js',
+    //minChunks: Infinity
+  }),
+  new webpack.HashedModuleIdsPlugin(),
+  ...
+]
+
+I prefer using one CommonsChunkPlugin for simplicity.
 
 ==========
 
@@ -475,7 +605,7 @@ devServer: {
 
 plugins: [
   ...
-  new new Webpack.HotModuleReplacementPlugin()
+  new new webpack.HotModuleReplacementPlugin()
 ]
 
 PS,
@@ -493,6 +623,15 @@ PS,
 cuz using HMR makes [chunkhash] useless and I possibly want to use [chunkhash],
 plus HMR is a bit complicated to set up,
 so I prefer not to use HMR
+
+PS,
+to me, using webpack-dev-server,
+which automatically watches files and refreshes pages for us,
+is good enough for developing
+
+and, for production,
+it's OK to use webpack without watching
+cuz we just use it to create some files in /dist
 
 ==========
 

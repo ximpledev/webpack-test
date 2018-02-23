@@ -1,11 +1,10 @@
 const path              = require('path');
-const Webpack           = require('webpack');
+const webpack           = require('webpack');
 const HtmlPlugin        = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-const SRC_DIR  = path.resolve(__dirname, 'src');
-const DIST_DIR = path.resolve(__dirname, 'dist');
-
+const SRC_DIR     = path.resolve(__dirname, 'src');
+const DIST_DIR    = path.resolve(__dirname, 'dist');
 const HASH_LENGTH = 8;
 
 module.exports = (env={}) => {
@@ -18,12 +17,11 @@ module.exports = (env={}) => {
     entry: {
       app: './app.jsx', // 'app' is chunk name & './' has to be added.
       vendor: [
-        'react', 'react-dom',
-        'lodash'
+        'lodash',
+        'react', 'react-dom'
       ]
     },
     // #endregion
-
     output: {
       path: DIST_DIR,
       filename: (
@@ -103,9 +101,12 @@ module.exports = (env={}) => {
       }
     },
     plugins: [
-      new Webpack.optimize.CommonsChunkPlugin ({
-        names: ['commons', 'vendor', 'manifest']
+      // #region Caching
+      new webpack.optimize.CommonsChunkPlugin ({
+        names: ['app', 'vendor', 'manifest']
       }),
+      new webpack.HashedModuleIdsPlugin(),
+      // #endregion
       new HtmlPlugin ({
         template: path.resolve(SRC_DIR, 'index.html'),
         inject: 'head' // default: 'body'
