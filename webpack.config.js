@@ -32,7 +32,7 @@ module.exports = (env={}) => {
         // Part 2: dev.
         `[name].[chunkhash:${HASH_LENGTH}].js` :
         // Part 3: prod.
-        `[name].bundle.js`
+        `[name].min.js`
       )
     },
     module: {
@@ -117,7 +117,7 @@ module.exports = (env={}) => {
           // Part 2: dev.
           `[name].[contenthash:${HASH_LENGTH}].css` : // contenthash, not chunkhash!
           // Part 3: prod.
-          `[name].bundle.css`
+          `[name].min.css`
         ),
         allChunks: true,
         //disable: !isProduction
