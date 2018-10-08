@@ -204,14 +204,14 @@ devServer: {
 
 devServer: {
   contentBase: DIST_DIR,
-  
+
   // Note:
   // 'inline': true is the default value, so ignore it for now and don't care
   // about what inline mode & iframe mode are.
   /*
   inline: true,
   */
-  
+
   // Note:
   // When using the HTML5 History API, the index.html page will likely have to
   // be served in place of any 404 responses. Setting 'historyApiFallback' to
@@ -220,7 +220,7 @@ devServer: {
   /*
   historyApiFallback: true,
   */
-  
+
   // Note:
   // 'stats' here could be a string or an object. Use string if we want to get
   // minimal info; use object if we want to get more info.
@@ -497,7 +497,7 @@ PS, React is required for app to run, use -S rather than -D
 - update index.html
 <div id='main'></div>
 
-- add app.jsx
+- add app.js
 console.log('Hello World!');
 
 import React    from 'react';
@@ -514,7 +514,7 @@ document.addEventListener (
   }
 );
 
-- add counter.jsx
+- add counter.js
 import React from 'react';
 
 class Counter extends React.Component {
@@ -549,7 +549,7 @@ with test: /\.jsx?$/
 where x? means: matching zero or one x.
 
 entry: {
-  app: './app.jsx', // 'app' is chunk name & './' has to be added.
+  app: './app.js', // 'app' is chunk name & './' has to be added.
   vendor: [
     'lodash',
     'react', 'react-dom'
@@ -656,7 +656,7 @@ update webpack.config.js
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-replace 
+replace
 
 module: {
   rules: [
@@ -726,7 +726,7 @@ plugins: [
 
 - update webpack.config.js
 
-replace 
+replace
 
 module: {
   rules: [
@@ -845,7 +845,7 @@ add
 
 (in our sample, the 'file' to load in an image,
 so it's OK to use an image-related loader to load.
-but, for simplicity, we just use file-loader) 
+but, for simplicity, we just use file-loader)
 
 - update webpack.config.js
 
@@ -881,7 +881,7 @@ and change our CSS (or SCSS)
 
 for instance,
 
-from 
+from
 
 body {
   background: url('../assets/images/test.jpg');
@@ -1246,7 +1246,7 @@ to
 
 module.exports = (env={}) => {
   const isProduction = (env.prod===true) ? true : false;
-  
+
   return {
     ...
   };
@@ -1260,13 +1260,13 @@ or it could be undefined if we don't assign --env
 > npm uninstall -D cross-env
 
 4. instead of letting webpack loaders (such as: css-loader) decide
-whether its own minification is necessary (by tuning option), 
+whether its own minification is necessary (by tuning option),
 uniformly let npm scripts (that is, webpack -p) to decide
 whether all minifications (not just CSS) is necessary.
 
 - update webpack.confg.js
 
-from 
+from
 
 module: {
   rules: [
@@ -1473,7 +1473,7 @@ and let webpack uses CLI
 webpack uses --colors=false as default
 enable it using webpack CLI
 
-webpack-dev-server uses --colors=true as default, 
+webpack-dev-server uses --colors=true as default,
 but, for consistency, we still enable it in webpack.config.js
 
 devServer: {

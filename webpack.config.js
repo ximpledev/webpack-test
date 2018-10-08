@@ -15,7 +15,7 @@ module.exports = (env={}) => {
     // #region Input
     context: SRC_DIR,
     entry: {
-      app: './app.jsx', // 'app' is chunk name & './' has to be added.
+      app: './app.js', // 'app' is chunk name & './' has to be added.
       vendor: [
         'lodash',
         'react', 'react-dom'
