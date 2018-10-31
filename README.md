@@ -104,7 +104,7 @@ module: {
 
 or
 
-- update package.json (option 2)
+- update package.json, not webpack.config.js (option 2)
 
 "babel": {
   "presets": [
@@ -168,7 +168,7 @@ ref... (
 )
 
 > npm i -D babel-plugin-transform-runtime
-> npm i -S babel-runtime
+> npm i babel-runtime
 
 - update .babelrc
 "plugins": [
@@ -298,7 +298,7 @@ devtool: 'source-map',
 start using commons-chunk-plugin
 with the help of [chunkhash]
 
-> npm i -S lodash
+> npm i lodash
 PS, not -D
 
 - update app.js (to use lodash)
@@ -483,8 +483,8 @@ I prefer using one CommonsChunkPlugin for simplicity.
 
 [React]
 
-> npm i -S react react-dom
-PS, React is required for app to run, use -S rather than -D
+> npm i react react-dom
+PS, React is required for app to run, don't use -D
 
 > npm i -D babel-preset-react
 
