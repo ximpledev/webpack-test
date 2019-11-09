@@ -1,13 +1,26 @@
 - create src, dist folders
-> npm init
-> npm i -D webpack
-- add src/app.js, dist/index.html
-- add webpack.config.js
 
-- edit app.js
+> npm init
+
+don't install webpack globally
+
+> npm i -D webpack webpack-cli
+
+where
+i means install
+-D means --save-dev
+
+that is,
+npm i -D webpack webpack-cli
+is equal to
+npm install --save-dev webpack webpack-cli
+
+=====
+
+- add & edit src/app.js
 alert('I love Webpack!');
 
-- edit index.html
+- add & edit dist/index.html
 <!DOCTYPE html>
 <html>
   <head>
@@ -19,9 +32,9 @@ alert('I love Webpack!');
   </body>
 </html>
 
-==========
+=====
 
-- edit webpack.config.js
+- add & edit webpack.config.js
 const path = require('path');
 
 const SRC_DIR  = path.resolve(__dirname, 'src');
@@ -35,7 +48,22 @@ module.exports = {
   }
 };
 
-- terminal> webpack
+-----
+
+we should set webpack's mode,
+or it will default to 'production'
+& give us a warning
+
+we'll set its mode later
+but for now, just use the default one
+& ignore the warning
+
+=====
+
+> npx webpack
+
+which is equal to call
+> node_modules/.bin/webpack
 
 - add .gitignore
 node_modules/
@@ -48,6 +76,10 @@ context: SRC_DIR,
 entry: {
   app: './app.js', // 'app' is chunk name; './' has to be added.
 }
+
+where
+context is an absolute string
+to the directory that contains the entry files.
 
 - add fav.js for app.js to import
 var fav = 'Webpack is my fav!';
@@ -65,66 +97,112 @@ alert(fav);
   ...
 }
 
+p.s.,
+just like
+> npx webpack
+
+using npm script has the same result,
+that is,
+when we update package.json
+  "start": webpack
+
+& then call
+> npm start
+
+which is equal to call
+> ./node_modules/.bin/webpack
+
 - update package.json to use watch mode
 "start": webpack --watch,
 
 ==========
 
 refs: (
-  - google babel
-  - click its Docs > Setup
+  - google 'babel'
+  - click 'Setup' tab
   - choose Webpack
 )
 
-> npm i -D babel-loader babel-core
+to see the lastest ways of install babel
 
-> npm i -D babel-preset-env
+> npm i -D babel-loader @babel-core
 
 - update webpack.config.js
+
+there're 2 ways of updating it...
+
+#1: using include
 module: {
   rules: [
     {
       test: /\.js$/,
-      use: ['babel-loader'],
-      //exclude: /node_modules/
-      include: SRC_DIR
+      include: SRC_DIR,
+      loader: "babel-loader"
     }
   ]
 }
 
-- add .babelrc (option 1)
+#2. using exclude
+module: {
+  rules: [
+    {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      loader: "babel-loader"
+    }
+  ]
+}
+
+I prefer #1.
+
+-----
+
+> npm i -D @babel/preset-env
+
+- add .babelrc
+{
+  "presets": ["@babel/preset-env"]
+}
+
+p.s.,
+in the older version of Babel
+we considered setting its "modules",
+that is,
 {
   "presets": [
     [
-      "env",
+      "@babel/preset-env",
       {"modules": false}
     ]
   ]
 }
 
-or
+where {"modules": false} means
+it won't transform ES6 module syntax to another module type.
 
-- update package.json, not webpack.config.js (option 2)
+if we don't use {"modules": false},
+default is transforming ES6 module syntax to commonjs.
 
-"babel": {
-  "presets": [
-    [
-      "env",
-      {"modules": false}
-    ],
-    "react"
-  ],
-  "plugins": [
-    "transform-runtime"
-  ]
-},
+but now,
+if we don't use {"modules": false},
+default is auto,
 
-where "modules": false means it won't transform ES6 module syntax to another module type.
-if we don't use {"modules": false}, default is transforming ES6 module syntax to commonjs.
+The default auto will automatically select false if ES6 module syntax is already
+supported by the caller, or "commonjs" otherwise.
 
-(I prefer option 2)
+(ref:
+https://stackoverflow.com/questions/55792519/what-does-the-modulesauto-means-in-babel-preset-env-field)
 
-see PS below
+to sum up,
+we're able to ignore it now
+& let the default value (aka, auto) to decide for us
+
+so just use
+{
+  "presets": ["@babel/preset-env"]
+}
+
+=====
 
 - change src/fav.js & src/app.js to ES6 syntax
 src/fav.js
@@ -135,72 +213,214 @@ src/app.js
 import fav from './fav';
 alert(fav);
 
-----------
-
-PS,
-if we want to use ES6 module syntax in webpack.config.js
-first, rename webpack.config.js to webpack.config.babel.js
-which means letting babel take care of it.
-but webpack.config.babel.js runs in Node, that is, we have to transform it to commonjs
-
-to sum up,
-if we want to use webpack.config.babel.js
-change .babelrc presets to ["env"] only
-"presets": [
-  "env"
-]
-
-otherwise, use
-"presets": [
-  [
-    "env",
-    {"modules": false}
-  ]
-]
-
 ==========
 
 [start using babel runtime]
+
+(basic idea:
+if we don't use babel runtime,
+babel embeds the helper functions to our code 
+to help converting ES2015 (aka, ES6) code to ES5, etc.
+whenever we require them.
+babel runtime is like a helper-function collection.
+using babel runtime to stop embedding the same helper functions
+over & over again)
 
 ref... (
   - Docs > Plugins
   - search 'runtime', click it
 )
 
-> npm i -D babel-plugin-transform-runtime
+> npm i -D @babel/plugin-transform-runtime
+
+> npm i -P babel-runtime
+(or just
 > npm i babel-runtime
+cuz -P is the default)
+
+p.s.,
+> npm i --save babel-runtime
+> npm i -S babel-runtime
+are old ways of installing it to 'dependencies'
+but don't use them anymore
+just use -P instead
+
+-----
 
 - update .babelrc
-"plugins": [
-  "transform-runtime"
-]
+"plugins": ["@babel/plugin-transform-runtime"]
 
 (but we don't know how to check if it's working, just use it)
 
 ==========
 
+before continuing
+let's split webpack.config.js into dev & prod
+which is the new feature of Webpack 4
+
+- add webpack.dev.config.js & webpack.prod.config.js
+
+- rename webpack.config.js to webpack.base.config.js
+
+- copy the content of webpack.base.config.js to dev & prod
+
+- add
+mode: "development"
+to webpack.dev.config.js
+mode: "production"
+to webpack.prod.config.js
+
+- remove dev & prod's input & output,
+//context: SRC_DIR,
+//entry: {
+//  ...
+//},
+//output: {
+//  ...
+//}
+
+-----
+
+- remove dev & prod's Babel module
+//module: {
+//  rules: [
+//    {
+//      test: /\.js$/,
+//      include: SRC_DIR,
+//      loader: "babel-loader"
+//    }
+//  ]
+//}
+
+-----
+
+> npm i -D webpack-merge
+
+add 
+const base = require('./webpack.base.config');
+const merge = require('webpack-merge');
+to dev & prod
+
+then change dev & prod's
+module.exports = {
+  ...
+};
+
+to 
+module.exports = merge(base, {
+  ...
+});
+
+-----
+
+after updating,
+
+[webpack.base.config.js] 
+
+const path = require('path');
+
+const SRC_DIR  = path.resolve(__dirname, 'src');
+
+module.exports = {
+  // input:
+  context: SRC_DIR,
+  entry: {
+    app: './app.js'
+  },
+  // :input
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include: SRC_DIR,
+        loader: "babel-loader"
+      }
+    ]
+  }
+};
+
+[webpack.dev.config.js]
+
+const base  = require('./webpack.base');
+const merge = require('webpack-merge');
+const path  = require('path');
+
+const DIST_DIR = path.resolve(__dirname, 'dist');
+
+module.exports = merge(base, {
+  mode: "development",
+  output: {
+    path: DIST_DIR,
+    filename: 'bundle.js'
+  }
+});
+
+[webpack.prod.config.js]
+
+const base  = require('./webpack.base');
+const merge = require('webpack-merge');
+const path  = require('path');
+
+const DIST_DIR = path.resolve(__dirname, 'dist');
+
+module.exports = merge(base, {
+  mode: "production",
+  output: {
+    path: DIST_DIR,
+    filename: 'bundle.js'
+  }
+});
+
+-----
+
+- update package.json
+
+"start": "webpack --config webpack.dev.config.js" --watch
+"build": "webpack --config webpack.prod.config.js" 
+
+p.s.,
+cuz 'start' is an npm keyword, 'run' isn't needed
+but 'build' isn't an npm keyword, 'run' is needed
+
+that is,
+we can use
+> npm start
+to perform the 'start' script,
+
+but we have to use
+> npm run build
+to perform the 'build' script
+
+==========
+
 [webpack-dev-server]
+
+in package.json, instead of using "--watch"
+that is,
+"start": "webpack --config webpack.dev.config.js" --watch
+there's a better choice
+=> using webpack-dev-server...
+why?
+
+using --watch writes files to disk that we don't really need
+such as: dist/bundle.js (which is needed in prod, not in dev)
+
+webpack-dev-server, which serves webpack bundles from memory (not from disk),
+automatically watches files and refreshes pages for us
+so, using webpack-dev-server is better for dev
+
+-----
 
 > npm i -D webpack-dev-server
 
-- update package.json
-"start": "webpack-dev-server",
-
 - update webpack.config.js
 devServer: {
-  contentBase: DIST_DIR,
-  inline: true,
-  // historyApiFallback relates to HTML5 histroy API. I don't know how to use it
-  // yet, but just set it to true for now.
-  historyApiFallback: true,
-  //stats: 'errors-only'
-  stats: {
-    colors:  true,
-    reasons: true,
-    chunks:  false,
-    modules: false
-  }
+  contentBase: DIST_DIR
 }
+
+-----
+
+webpack-dev-server has more options, but not necessary...
 
 devServer: {
   contentBase: DIST_DIR,
@@ -228,39 +448,61 @@ devServer: {
   stats: 'errors-only'
   */
   stats: {
-    chunks: false,
+    colors:  true,
+    reasons: true,
+    chunks:  false,
     modules: false
   }
   // :Note
 },
 
-- remove dist/bundle.js
-> npm start
-- http://localhost:8080/
+so, just use
+devServer: {
+  contentBase: DIST_DIR,
+  stats: {
+    colors:  true,
+    reasons: true,
+    chunks:  false,
+    modules: false
+  }
+},
 
-now,
---watch isn't needed
-after modifying files,
-webpack-dev-server, which serves webpack bundles from memory (not from disk), automatically watches files and refreshes pages for us
-
-==========
+-----
 
 - update package.json
+"start": "webpack-dev-server --config webpack.dev.config.js",
+
+- use --open
+to tell dev-server to open the browser after server had been started
+=>
+"start": "webpack-dev-server --config webpack.dev.config.js --open",
+
+=>
 "scripts": {
-  "start": "webpack-dev-server",
-  "build": "webpack",
+  "start": "webpack-dev-server --config webpack.dev.config.js --open",
+  "build": "webpack --config webpack.prod.config.js",
   ...
-}
+},
 
 from now on
 
-cuz 'start' is an npm keyword, 'run' isn't needed,
+for dev,
 > npm start
 to use webpack-dev-server and no 'dist' folder is built
 
-if needed
+for prod,
 > npm run build
 to use webpack to build stuff in 'dist' folder
+
+-----
+
+- remove dist/bundle.js
+
+> npm start
+
+cuz we add --open at the end of the 'start' script
+http://localhost:8080/
+will be opened automatically
 
 ==========
 
@@ -274,32 +516,27 @@ to use webpack to build stuff in 'dist' folder
 - update src/index.html
 (remove <script src='bundle.js'></script>)
 
-- update webpack.config.js
-const HtmlPlugin = require('html-webpack-plugin');
+- update webpack.base.config.js
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 plugins: [
-  new HtmlPlugin ({
+  new HtmlWebpackPlugin ({
     template: path.resolve(SRC_DIR, 'index.html'),
-    inject: 'head' // default: 'body'
+    inject: 'head' // default: 'body' <- ?????? why not use default
   })
 ]
 
 ==========
 
-[source map]
-
-- update webpack.config.js
-devtool: 'source-map',
-
-==========
-
+removed in webpack v.4
+/*
 [caching]
 
 start using commons-chunk-plugin
 with the help of [chunkhash]
 
 > npm i lodash
-PS, not -D
+p.s., without -D
 
 - update app.js (to use lodash)
 import _ from 'lodash';
@@ -344,9 +581,25 @@ plugins: [
   ...
 ]
 
-where the name 'manifest' (instead of 'bootstrap', used by Matt) is commonly used.
+where
+the name 'manifest' (instead of 'bootstrap', used by Matt)
+is commonly used.
 
-PS,
+in the case above,
+only lodash is used,
+so we only need to put it in vender: [...]
+aka,
+vender: ['lodash']
+later,
+we need more vender libs,
+such as: react, etc.
+add them to vender: [...]
+aka,
+vender: ['lodash', 'react']
+
+-----
+
+p.s.,
 after my experiments,
 
 plugins: [
@@ -402,7 +655,7 @@ const webpack = require('webpack');
 
 like what webpack docs do
 
------
+==========
 
 [HashedModuleIdsPlugin]
 
@@ -478,6 +731,159 @@ plugins: [
 ]
 
 I prefer using one CommonsChunkPlugin for simplicity.
+*/
+
+==========
+
+[caching] (webpack v.4)
+
+-----
+
+before continuing
+introduce webpack-bundle-analyzer first
+
+> npm i -D webpack-bundle-analyzer
+
+ref:
+https://github.com/webpack-contrib/webpack-bundle-analyzer
+
+- update webpack.base.config.js
+
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+module.exports = {
+  plugins: [
+    new BundleAnalyzerPlugin()
+  ]
+}
+
+-----
+
+> npm i lodash
+p.s., without -D
+
+- update app.js (to use lodash)
+import _ from 'lodash';
+import fav from './fav';
+
+let s = '';
+_.forEach (
+  fav,
+  (item) => {
+    s += `${item} `;
+  }
+);
+
+alert(s);
+
+- update fav.js
+const fav = [
+  'Xup',
+  'yo,',
+  'Webpack!'
+];
+
+export default fav;
+
+> npm start
+it works.
+
+-----
+
+ref...
+https://webpack.js.org/guides/caching/
+
+start using optimization, runtimeChunk, & splitChunks.cacheGroups, etc.
+with the help of [contenthash]
+
+- update webpack.base.config.js
+output: {
+  path: DIST_DIR,
+  filename: '[name].[contenthash].js'
+},
+
+then,
+step 1.
+extracting boilerplate
+
+- update webpack.base.config.js
+optimization: {
+  runtimeChunk: 'single'
+},
+
+p.s.,
+which is the equivalent of
+optimization: {
+  runtimeChunk: {
+    name: 'runtime'
+  }
+},
+
+I prefer using 'single'
+
+then
+step 2.
+extract third-party libs
+
+- update webpack.base.config.js
+optimization: {
++ moduleIds: 'hashed',
+  runtimeChunk: 'single',
++ splitChunks: {
++   cacheGroups: {
++     vendors: {
++       test: /[\\/]node_modules[\\/]/,
++       name: 'vendors',
++       chunks: 'all',
++     },
++   },
++ },
+},
+
+p.s.,
+just use the settings above,
+which are copied from the webpack docs
+
+-----
+
+[CleanWebpackPlugin]
+
+> npm start
+it works (& runs in webpack-dev-server)
+nothing added to dist/
+
+> npm run build
+it works,
+but because we use [contenthash]
+
+everytime the code is changed & rebuild,
+a new app.*.bundle.js is created
+that is,
+there're more and more app.*.bundle.js in dist/
+
+so we use CleanWebpackPlugin
+to clean the dist/ for us
+
+> npm i clean-webpack-plugin
+(no -D cuz it's mainly used for prod)
+
+- update webpack.prod.config.js
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+
+plugins: [
+  new CleanWebpackPlugin()
+]
+
+now
+> npm run build
+there's only one app.*.bundle.js in dist/
+
+==========
+
+[source map]
+
+- update webpack.dev.config.js
+devtool: 'source-map'
 
 ==========
 
