@@ -1,0 +1,38 @@
+[CleanWebpackPlugin]
+
+> npm start
+it works (& runs in webpack-dev-server)
+nothing added to dist/
+
+> npm run build
+it works,
+but because we use [contenthash]
+
+everytime the code is changed & rebuild,
+a new app.*.bundle.js is created
+that is,
+there're more and more app.*.bundle.js in dist/
+
+so we use CleanWebpackPlugin
+to clean the dist/ for us
+
+> npm i clean-webpack-plugin
+(no -D cuz it's mainly used for prod)
+
+- update webpack.prod.config.js
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+
+plugins: [
+  new CleanWebpackPlugin()
+]
+
+now
+> npm run build
+there's only one app.*.bundle.js in dist/
+
+==========
+
+[source map]
+
+- update webpack.dev.config.js
+devtool: 'source-map'

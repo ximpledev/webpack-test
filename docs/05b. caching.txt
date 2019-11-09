@@ -1,0 +1,89 @@
+[caching] (webpack v.4)
+
+in order to explain how caching works,
+start using lodash (a third-party lib)
+
+> npm i lodash
+p.s., without -D
+
+- update app.js (to use lodash)
+import _ from 'lodash';
+import fav from './fav';
+
+let s = '';
+_.forEach (
+  fav,
+  (item) => {
+    s += `${item} `;
+  }
+);
+
+alert(s);
+
+- update fav.js
+const fav = [
+  'Xup',
+  'yo,',
+  'Webpack!'
+];
+
+export default fav;
+
+> npm start
+it works.
+
+-----
+
+ref...
+https://webpack.js.org/guides/caching/
+
+start using optimization, runtimeChunk, & splitChunks.cacheGroups, etc.
+with the help of [contenthash]
+
+- update webpack.base.config.js
+output: {
+  path: DIST_DIR,
+  filename: '[name].[contenthash].js'
+},
+
+then,
+step 1.
+extracting boilerplate
+
+- update webpack.base.config.js
+optimization: {
+  runtimeChunk: 'single'
+},
+
+p.s.,
+which is the equivalent of
+optimization: {
+  runtimeChunk: {
+    name: 'runtime'
+  }
+},
+
+I prefer using 'single'
+
+then
+step 2.
+extract third-party libs
+
+- update webpack.base.config.js
+optimization: {
++ moduleIds: 'hashed',
+  runtimeChunk: 'single',
++ splitChunks: {
++   cacheGroups: {
++     vendors: {
++       test: /[\\/]node_modules[\\/]/,
++       name: 'vendors',
++       chunks: 'all',
++     },
++   },
++ },
+},
+
+p.s.,
+just use the settings above,
+which are copied from the webpack docs

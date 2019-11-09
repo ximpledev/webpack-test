@@ -1,0 +1,396 @@
+[CSS]
+
+> npm i -D css-loader style-loader
+
+- update webpack.config.js
+
+modules: {
+  rules: [
+    ...,
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+      include: SRC_DIR
+    }
+  ]
+}
+
+from now on, we're able to import CSS file through relative path.
+ex:
+import './styles/footer.css';
+
+==========
+
+(optional)
+
+HMR (Hot Module Replacement)
+
+- update webpack.config.js
+
+devServer: {
+  ...
+  hot: true
+},
+
+plugins: [
+  ...
+  new new webpack.HotModuleReplacementPlugin()
+]
+
+PS,
+if we want to use [chunkhash] later,
+HMR must be disabled, or compilation will fail.
+
+PS,
+it's OK to use [hash/contenthash] when HMR is enabled.
+
+PS,
+[hash] is used by file-loader
+[contenthash] is used by extract-text-plugin
+
+PS,
+cuz using HMR makes [chunkhash] useless and I possibly want to use [chunkhash],
+plus HMR is a bit complicated to set up,
+so I prefer not to use HMR
+
+PS,
+to me, using webpack-dev-server,
+which automatically watches files and refreshes pages for us,
+is good enough for developing
+
+and, for production,
+it's OK to use webpack without watching
+cuz we just use it to create some files in /dist
+
+==========
+
+[alias]
+
+- update webpack.config.js
+
+resolve: {
+  ...
+  alias: {
+    styles: path.resolve(SRC_DIR, 'styles')
+  }
+},
+
+==========
+
+[extract-text-plugin]
+
+> npm i -D extract-text-webpack-plugin
+
+update webpack.config.js
+
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+replace
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+      include: SRC_DIR
+    }
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.css$/,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: 'css-loader'
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+and then, add
+
+plugins: [
+  ...
+  new ExtractTextPlugin ({
+    filename: '[name].bundle.css',
+    allChunks: true
+  })
+]
+
+hasn't figured out what 'allChunks' is entirely,
+but I know setting 'allChunks: true' makes all CSS not be embedded,
+so just set 'allChunks: true' for now.
+
+also, cuz no CSS are embedded,
+fallback: 'style-loader' in ExtractTextPlugin.extract({}) seems not necessary,
+but just keep it.
+
+PS,
+if we want to use [chunkhash] like JS bundles,
+use [contenthash] instead cuz neither [hash] nor [chunkhash] work
+when using the ExtractTextWebpackPlugin
+
+that is,
+
+plugins: [
+  ...
+  new ExtractTextPlugin ({
+    filename: '[name].[contenthash].css',
+    allChunks: true
+  })
+]
+
+==========
+
+[SASS (pre-processors)]
+
+> npm i -D node-sass sass-loader
+
+- update webpack.config.js
+
+replace
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.css$/,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: 'css-loader'
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: ['css-loader', 'sass-loader']
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+then replace CSS with SCSS
+
+and remember to replace
+
+e.g.
+import 'styles/main.css';
+
+with
+import 'styles/main.scss';
+
+==========
+
+[PostCSS (autoprefixer)]
+
+> npm i -D autoprefixer postcss-loader
+
+- add postcss.config.js (option 1)
+
+module.exports = {
+  plugins: [
+    require('autoprefixer')
+  ]
+};
+
+or
+
+- update package.json (option 2)
+
+"postcss": {
+  "plugins": {
+    "autoprefixer": {}
+  }
+},
+
+(I prefer option 2)
+
+- update webpack.config.js
+
+replace
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: ['css-loader', 'sass-loader']
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: ['css-loader', 'postcss-loader', 'sass-loader']
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+- update package.json
+
+add
+
+"browserslist": [
+  "> 1%",
+  "ie > 9"
+],
+
+==========
+
+[file-loader]
+
+> npm i -D file-loader
+
+(in our sample, the 'file' to load in an image,
+so it's OK to use an image-related loader to load.
+but, for simplicity, we just use file-loader)
+
+- update webpack.config.js
+
+add
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(jpe?g|png)$/,
+      use: ['file-loader'],
+      include: SRC_DIR
+    }
+  ]
+}
+
+where jpe?g means matching 'e' 0 or 1 time,
+that is, jpe?g = jpg or jpeg
+
+then...
+if we want to use alias,
+
+- update webpack.config.js
+
+resolve: {
+  alias: {
+    ...
+    images: path.resolve(SRC_DIR, 'assets/images')
+  }
+}
+
+and change our CSS (or SCSS)
+
+for instance,
+
+from
+
+body {
+  background: url('../assets/images/test.jpg');
+}
+
+to
+
+body {
+  background: url('~images/images/test.jpg');
+}
+
+not
+
+body {
+  background: url('images/images/test.jpg');
+}
+
+cuz CSS uses relative paths
+if we use url('images/images/test.jpg')
+CSS tries to resolve it to url('./images/images/test.jpg')
+
+but if we put '~' before the path,
+webpack knows we want to use the path in absolute way and will resolves it for us
+
+==========
+
+[minify CSS]
+
+there're 2 ways to minify CSS.
+
+1. use css-loader options
+
+- update webpack.config.js
+
+replace
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: ['css-loader', 'postcss-loader', 'sass-loader']
+      }),
+      include: SRC_DIR
+    },
+    ...
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|scss|sass)$/,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: [
+          {
+            loader: 'css-loader',
+            options: {
+              minimize: true
+            }
+          },
+          'postcss-loader',
+          'sass-loader'
+        ]
+      }),
+      include: SRC_DIR
+    },
+    ...
+  ]
+}
+
+2. use 'webpack -p' in package.json,
+where -p switches webpack loaders to minimize mode.
+
+see [build script] below for further explanation.
+
+I prefer solution 2.

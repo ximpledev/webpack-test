@@ -1,0 +1,85 @@
+[React]
+
+> npm i react react-dom
+PS, React is required for app to run, don't use -D
+
+> npm i -D babel-preset-react
+
+- update .babelrc
+"presets": [
+  ...
+  "react"
+]
+
+- update index.html
+<div id='main'></div>
+
+- add app.js
+console.log('Hello World!');
+
+import React    from 'react';
+import ReactDOM from 'react-dom';
+import Counter  from './counter';
+
+document.addEventListener (
+  'DOMContentLoaded',
+  () => {
+    ReactDOM.render (
+      React.createElement(Counter),
+      document.getElementById('main')
+    );
+  }
+);
+
+- add counter.js
+import React from 'react';
+
+class Counter extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      count: 0,
+    };
+  }
+
+  render() {
+    return (
+      <button
+        onClick={() => {
+          this.setState ({
+            count: this.state.count + 1
+          });
+        }}>
+        Count: {this.state.count}
+      </button>
+    );
+  }
+}
+
+export default Counter;
+
+- update webpack.config.js
+
+replace test: /\.js$/
+with test: /\.jsx?$/
+where x? means: matching zero or one x.
+
+entry: {
+  app: './app.js', // 'app' is chunk name & './' has to be added.
+  vendor: [
+    'lodash',
+    'react', 'react-dom'
+  ]
+},
+
+rules: [
+  {
+    test: /\.jsx?$/,
+    ...
+  }
+],
+
+resolve: {
+  extensions: ['.js', '.jsx'] // default: ['.js', '.json']
+}

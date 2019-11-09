@@ -1,0 +1,138 @@
+[Modes]
+
+before continuing
+let's split webpack.config.js into dev & prod
+which is the new feature of Webpack 4
+
+- add webpack.dev.config.js & webpack.prod.config.js
+
+- rename webpack.config.js to webpack.base.config.js
+
+- copy the content of webpack.base.config.js to dev & prod
+
+- add
+mode: "development"
+to webpack.dev.config.js
+mode: "production"
+to webpack.prod.config.js
+
+- remove dev & prod's input & output,
+//context: SRC_DIR,
+//entry: {
+//  ...
+//},
+//output: {
+//  ...
+//}
+
+-----
+
+- remove dev & prod's Babel module
+//module: {
+//  rules: [
+//    {
+//      test: /\.js$/,
+//      include: SRC_DIR,
+//      loader: "babel-loader"
+//    }
+//  ]
+//}
+
+-----
+
+> npm i -D webpack-merge
+
+add 
+const base = require('./webpack.base.config');
+const merge = require('webpack-merge');
+to dev & prod
+
+then change dev & prod's
+module.exports = {
+  ...
+};
+
+to 
+module.exports = merge(base, {
+  ...
+});
+
+-----
+
+after updating,
+
+[webpack.base.config.js] 
+
+const path = require('path');
+
+const SRC_DIR  = path.resolve(__dirname, 'src');
+
+module.exports = {
+  // input:
+  context: SRC_DIR,
+  entry: {
+    app: './app.js'
+  },
+  // :input
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include: SRC_DIR,
+        loader: "babel-loader"
+      }
+    ]
+  }
+};
+
+[webpack.dev.config.js]
+
+const base  = require('./webpack.base');
+const merge = require('webpack-merge');
+const path  = require('path');
+
+const DIST_DIR = path.resolve(__dirname, 'dist');
+
+module.exports = merge(base, {
+  mode: "development",
+  output: {
+    path: DIST_DIR,
+    filename: 'bundle.js'
+  }
+});
+
+[webpack.prod.config.js]
+
+const base  = require('./webpack.base');
+const merge = require('webpack-merge');
+const path  = require('path');
+
+const DIST_DIR = path.resolve(__dirname, 'dist');
+
+module.exports = merge(base, {
+  mode: "production",
+  output: {
+    path: DIST_DIR,
+    filename: 'bundle.js'
+  }
+});
+
+-----
+
+- update package.json
+
+"start": "webpack --config webpack.dev.config.js" --watch
+"build": "webpack --config webpack.prod.config.js" 
+
+p.s.,
+cuz 'start' is an npm keyword, 'run' isn't needed
+but 'build' isn't an npm keyword, 'run' is needed
+
+that is,
+we can use
+> npm start
+to perform the 'start' script,
+
+but we have to use
+> npm run build
+to perform the 'build' script

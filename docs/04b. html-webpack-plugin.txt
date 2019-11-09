@@ -1,0 +1,19 @@
+[html-webpack-plugin]
+
+- move dist/index.html to src/index.html
+- remove dist folder
+
+> npm i -D html-webpack-plugin
+
+- update src/index.html
+(remove <script src='bundle.js'></script>)
+
+- update webpack.base.config.js
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+plugins: [
+  new HtmlWebpackPlugin ({
+    template: path.resolve(SRC_DIR, 'index.html'),
+    inject: 'head' // default: 'body' <- ?????? why not use default
+  })
+]
