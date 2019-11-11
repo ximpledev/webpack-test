@@ -6,7 +6,7 @@ start using lodash (a third-party lib)
 > npm i lodash
 p.s., without -D
 
-- update app.js (to use lodash)
+- update index.js (to use lodash)
 import _ from 'lodash';
 import fav from './fav';
 
@@ -85,5 +85,9 @@ optimization: {
 },
 
 p.s.,
-just use the settings above,
+just use the settings above for now,
 which are copied from the webpack docs
+
+if we're interested in more options,
+go check
+https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkscachegroups

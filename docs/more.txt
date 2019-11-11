@@ -28,7 +28,7 @@ and --progress prints compilation progress in percentage
 
 ----------
 
-PS,
+p.s.,
 "set NODE_ENV=production && webpack-dev-server" adds a trailing space to the variable.
 that is, NODE_ENV will become 'production ', not 'production'
 
@@ -47,7 +47,7 @@ I prefer solution 2.
 
 ----------
 
-PS,
+p.s.,
 npm scripts are different in Windows & Linux,
 in Linux, we just need to set...
 
@@ -193,7 +193,7 @@ or it won't work
 
 ------
 
-PS,
+p.s.,
 cross-env is a cross-platform solution for setting environment variable, such as: NODE_ENV
 
 Similarly, Windows Command Prompt (cmd) has no 'rm' command
@@ -282,7 +282,7 @@ module.exports = (env={}) => {
   };
 };
 
-PS, we must give env a default value {},
+p.s., we must give env a default value {},
 or it could be undefined if we don't assign --env
 (such as: --env.dev, --env.prod, etc.) in npm scripts
 
@@ -533,7 +533,7 @@ enable it using webpack CLI
 
 > webpack --env.prod -p --colors --progress
 
-PS,
+p.s.,
 --color & --colors are both OK in webpack & webpack-dev-server CLI
 but in webpack.config.js
 

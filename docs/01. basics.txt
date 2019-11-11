@@ -2,10 +2,7 @@
 
 > npm init
 
-don't install webpack globally
-
 > npm i -D webpack webpack-cli
-
 where
 i means install
 -D means --save-dev
@@ -15,9 +12,17 @@ npm i -D webpack webpack-cli
 is equal to
 npm install --save-dev webpack webpack-cli
 
-=====
+p.s.,
+don't install webpack globally
+(aka,
+> npm i -g webpack webpack-cli
+or
+> npm i --global webpack webpack-cli
+don't!)
 
-- add & edit src/app.js
+-----
+
+- add & edit src/index.js
 alert('I love Webpack!');
 
 - add & edit dist/index.html
@@ -32,7 +37,7 @@ alert('I love Webpack!');
   </body>
 </html>
 
-=====
+-----
 
 - add & edit webpack.config.js
 const path = require('path');
@@ -41,7 +46,7 @@ const SRC_DIR  = path.resolve(__dirname, 'src');
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
 module.exports = {
-  entry: path.resolve(SRC_DIR, 'app.js'),
+  entry: path.resolve(SRC_DIR, 'index.js'),
   output: {
     path: DIST_DIR,
     filename: 'bundle.js'
@@ -50,6 +55,7 @@ module.exports = {
 
 -----
 
+p.s.,
 we should set webpack's mode,
 or it will default to 'production'
 & give us a warning
@@ -58,34 +64,34 @@ we'll set its mode later
 but for now, just use the default one
 & ignore the warning
 
-=====
+-----
 
 > npx webpack
 
-which is equal to call
+which is equal to use
 > node_modules/.bin/webpack
 
 - add .gitignore
 node_modules/
 dist/
 
-==========
+-----
 
 - update webpack.config.js
 context: SRC_DIR,
 entry: {
-  app: './app.js', // 'app' is chunk name; './' has to be added.
+  app: './index.js', // 'app' is chunk name, default: 'main'; './' has to be added.
 }
 
 where
 context is an absolute string
 to the directory that contains the entry files.
 
-- add fav.js for app.js to import
+- add fav.js for index.js to import
 var fav = 'Webpack is my fav!';
 module.exports = fav;
 
-- update app.js
+- update index.js
 var fav = require('./fav');
 alert(fav);
 
@@ -97,20 +103,22 @@ alert(fav);
   ...
 }
 
-p.s.,
-just like
-> npx webpack
-
 using npm script has the same result,
 that is,
 when we update package.json
-  "start": webpack
+"start": webpack
 
-& then call
+& then use
 > npm start
 
-which is equal to call
+which is equal to use
 > ./node_modules/.bin/webpack
+
+p.s.,
+also, it's equal to use
+> npx webpack
+
+-----
 
 - update package.json to use watch mode
 "start": webpack --watch

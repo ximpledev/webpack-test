@@ -3,6 +3,7 @@
 in package.json, instead of using "--watch"
 that is,
 "start": "webpack --config webpack.dev.config.js" --watch
+
 there's a better choice
 => using webpack-dev-server...
 why?
@@ -64,12 +65,12 @@ devServer: {
 so, just use
 devServer: {
   contentBase: DIST_DIR,
-  stats: {
-    colors:  true,
-    reasons: true,
-    chunks:  false,
-    modules: false
-  }
++ stats: {
++   colors:  true,
++   reasons: true,
++   chunks:  false,
++   modules: false
++ }
 },
 
 -----
@@ -78,9 +79,9 @@ devServer: {
 "start": "webpack-dev-server --config webpack.dev.config.js",
 
 - use --open
-to tell dev-server to open the browser after server had been started
-=>
+aka,
 "start": "webpack-dev-server --config webpack.dev.config.js --open",
+to tell dev-server to open the browser after server had been started
 
 =>
 "scripts": {

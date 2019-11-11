@@ -1,7 +1,6 @@
 [Modes]
 
-before continuing
-let's split webpack.config.js into dev & prod
+split webpack.config.js into dev & prod
 which is the new feature of Webpack 4
 
 - add webpack.dev.config.js & webpack.prod.config.js
@@ -71,7 +70,7 @@ module.exports = {
   // input:
   context: SRC_DIR,
   entry: {
-    app: './app.js'
+    app: './index.js'
   },
   // :input
   module: {
@@ -87,13 +86,13 @@ module.exports = {
 
 [webpack.dev.config.js]
 
-const base  = require('./webpack.base');
-const merge = require('webpack-merge');
-const path  = require('path');
+const base         = require('./webpack.base');
+const webpackMerge = require('webpack-merge');
+const path         = require('path');
 
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
-module.exports = merge(base, {
+module.exports = webpackMerge(base, {
   mode: "development",
   output: {
     path: DIST_DIR,
@@ -103,13 +102,13 @@ module.exports = merge(base, {
 
 [webpack.prod.config.js]
 
-const base  = require('./webpack.base');
-const merge = require('webpack-merge');
-const path  = require('path');
+const base         = require('./webpack.base');
+const webpackMerge = require('webpack-merge');
+const path         = require('path');
 
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
-module.exports = merge(base, {
+module.exports = webpackMerge(base, {
   mode: "production",
   output: {
     path: DIST_DIR,
@@ -131,8 +130,8 @@ but 'build' isn't an npm keyword, 'run' is needed
 that is,
 we can use
 > npm start
-to perform the 'start' script,
+to run the 'start' script,
 
 but we have to use
 > npm run build
-to perform the 'build' script
+to run the 'build' script

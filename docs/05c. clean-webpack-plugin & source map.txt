@@ -1,4 +1,4 @@
-[CleanWebpackPlugin]
+[clean-webpack-plugin]
 
 > npm start
 it works (& runs in webpack-dev-server)
@@ -30,7 +30,7 @@ now
 > npm run build
 there's only one app.*.bundle.js in dist/
 
-==========
+-----
 
 [source map]
 

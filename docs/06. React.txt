@@ -1,7 +1,9 @@
 [React]
 
 > npm i react react-dom
-PS, React is required for app to run, don't use -D
+
+p.s.,
+React is required for app to run, don't use -D
 
 > npm i -D babel-preset-react
 
@@ -14,7 +16,7 @@ PS, React is required for app to run, don't use -D
 - update index.html
 <div id='main'></div>
 
-- add app.js
+- add index.js
 console.log('Hello World!');
 
 import React    from 'react';
@@ -66,7 +68,7 @@ with test: /\.jsx?$/
 where x? means: matching zero or one x.
 
 entry: {
-  app: './app.js', // 'app' is chunk name & './' has to be added.
+  app: './index.js',
   vendor: [
     'lodash',
     'react', 'react-dom'
