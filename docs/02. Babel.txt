@@ -5,84 +5,33 @@ refs:
 - click 'Setup' tab
 - choose Webpack
 
-to see the lastest ways of install babel
+to see the lastest ways of installing babel
 
 > npm i -D babel-loader @babel-core
 
 - update webpack.config.js
-
-there're 2 ways of updating it...
-
-#1: using include
-module: {
-  rules: [
-    {
-      test: /\.js$/,
-      include: SRC_DIR,
-      loader: "babel-loader"
-    }
-  ]
+module.exports = {
++ module: {
++   rules: [
++     {
++       test: /\.js$/,
++       exclude: /node_modules/,
++       loader: "babel-loader"
++     }
++   ]
++ }
 }
-
-#2. using exclude
-module: {
-  rules: [
-    {
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: "babel-loader"
-    }
-  ]
-}
-
-I prefer #1.
 
 -----
 
 > npm i -D @babel/preset-env
 
 - add .babelrc
-{
-  "presets": ["@babel/preset-env"]
-}
-
-p.s.,
-in the older version of Babel
-we considered setting its "modules",
-that is,
-{
-  "presets": [
-    [
-      "@babel/preset-env",
-      {"modules": false}
-    ]
-  ]
-}
-
-where {"modules": false} means
-it won't transform ES6 module syntax to another module type.
-
-if we don't use {"modules": false},
-default is transforming ES6 module syntax to commonjs.
-
-but now,
-if we don't use {"modules": false},
-default is auto,
-
-The default auto will automatically select false if ES6 module syntax is already
-supported by the caller, or "commonjs" otherwise.
-
-(ref:
-https://stackoverflow.com/questions/55792519/what-does-the-modulesauto-means-in-babel-preset-env-field)
-
-to sum up,
-we can ignore it
-& let the default value (aka, auto) to decide for us
-
-so just use
-{
-  "presets": ["@babel/preset-env"]
-}
++ {
++   "presets": [
++     "@babel/preset-env"
++   ]
++ }
 
 -----
 
@@ -114,24 +63,36 @@ ref...
 
 > npm i -D @babel/plugin-transform-runtime
 
-> npm i -P babel-runtime
+> npm i @babel/runtime
 (or just
-> npm i babel-runtime
+> npm i -P @babel/runtime
 cuz -P is the default)
 
 p.s.,
-> npm i --save babel-runtime
-> npm i -S babel-runtime
+> npm i --save @babel/runtime
+> npm i -S @babel/runtime
 are old ways of installing it to 'dependencies'
 but don't use them anymore
-just use -P instead
+use -P instead,
+or just
+> npm i @babel/runtime 
+
+p.s.,
+I prefer
+> npm i @babel/runtime
 
 -----
 
 - update .babelrc
-"plugins": ["@babel/plugin-transform-runtime"]
+{
+  "presets": [
+    "@babel/preset-env"
+  ],
++ "plugins": [
++   "@babel/plugin-transform-runtime"
++ ]
+}
 
 p.s.,
 we don't know how to check if it's working,
 just use it
-

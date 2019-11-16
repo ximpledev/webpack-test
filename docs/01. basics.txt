@@ -99,8 +99,8 @@ alert(fav);
 
 - update package.json to use npm scripts
 "scripts": {
-  "start": webpack,
-  ...
++ "start": webpack,
+- "test": "echo \"Error: no test specified\" && exit 1"
 }
 
 using npm script has the same result,

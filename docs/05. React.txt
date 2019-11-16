@@ -1,20 +1,32 @@
 [React]
 
 > npm i react react-dom
-
 p.s.,
 React is required for app to run, don't use -D
 
-> npm i -D babel-preset-react
+-----
+
+> npm i -D @babel/preset-react
 
 - update .babelrc
-"presets": [
-  ...
-  "react"
-]
+{
+  "presets": [
+    "@babel/preset-env",
++   "@babel/preset-react"
+  ]
+}
 
 - update index.html
-<div id='main'></div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Webpack Test</title>
+  </head>
+  <body>
+    <h1>Hello Webpack!</h1>
++   <div id='main'></div>
+  </body>
+</html>
 
 - add index.js
 console.log('Hello World!');
@@ -62,26 +74,30 @@ class Counter extends React.Component {
 export default Counter;
 
 - update webpack.config.js
+module.exports = {
+  module: {
+    rules: [
+      {
+-       test: /\.js$/,
++       test: /\.jsx?$/,
+        exclude: /node_modules/,
+        loader: "babel-loader"
+      }
+    ]
+  },
+};
 
-replace test: /\.js$/
-with test: /\.jsx?$/
 where x? means: matching zero or one x.
 
-entry: {
-  app: './index.js',
-  vendor: [
-    'lodash',
-    'react', 'react-dom'
-  ]
-},
+-----
 
-rules: [
-  {
-    test: /\.jsx?$/,
-    ...
-  }
-],
+- add resolve.extensions
 
-resolve: {
-  extensions: ['.js', '.jsx'] // default: ['.js', '.json']
-}
+module.exports = {
++ resolve: {
++   extensions: ['.js', '.jsx'] // default: ['.js', '.json']
++ }
+};
+
+ref:
+https://webpack.js.org/configuration/resolve/#resolveextensions
