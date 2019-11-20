@@ -80,14 +80,48 @@ module.exports = {
       {
 -       test: /\.js$/,
 +       test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loader: "babel-loader"
+        include: SRC_DIR,
+        use: ['babel-loader']
       }
     ]
   },
 };
 
 where x? means: matching zero or one x.
+
+-----
+
+p.s.,
+just like we mentioned in Babel part,
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+-       include: SRC_DIR,
++       exclude: /node_modules/,
+        use: ['babel-loader']
+      }
+    ]
+  },
+};
+
+is also OK,
+but I prefer using include.
+
+so finally, use
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        include: SRC_DIR,
+        use: ['babel-loader']
+      }
+    ]
+  },
+};
 
 -----
 

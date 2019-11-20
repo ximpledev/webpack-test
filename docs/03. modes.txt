@@ -86,13 +86,13 @@ module.exports = {
 
 [webpack.dev.config.js]
 
-const base         = require('./webpack.base');
-const webpackMerge = require('webpack-merge');
-const path         = require('path');
+const base  = require('./webpack.base');
+const merge = require('webpack-merge');
+const path  = require('path');
 
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
-module.exports = webpackMerge(base, {
+module.exports = merge(base, {
   mode: "development",
   output: {
     path: DIST_DIR,
@@ -102,13 +102,13 @@ module.exports = webpackMerge(base, {
 
 [webpack.prod.config.js]
 
-const base         = require('./webpack.base');
-const webpackMerge = require('webpack-merge');
-const path         = require('path');
+const base  = require('./webpack.base');
+const merge = require('webpack-merge');
+const path  = require('path');
 
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
-module.exports = webpackMerge(base, {
+module.exports = merge(base, {
   mode: "production",
   output: {
     path: DIST_DIR,

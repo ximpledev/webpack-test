@@ -1,82 +1,14 @@
-[CSS]
+[ExtractTextWebpackPlugin]
 
-> npm i -D css-loader style-loader
+ref...
+https://webpack.js.org/plugins/extract-text-webpack-plugin
 
-- update webpack.config.js
+[warning]
+Since webpack v4,
+the extract-text-webpack-plugin should not be used for CSS.
+Use mini-css-extract-plugin instead.
 
-modules: {
-  rules: [
-    ...,
-    {
-      test: /\.css$/,
-      use: ['style-loader', 'css-loader'],
-      include: SRC_DIR
-    }
-  ]
-}
-
-from now on, we're able to import CSS file through relative path.
-ex:
-import './styles/footer.css';
-
-==========
-
-(optional)
-
-HMR (Hot Module Replacement)
-
-- update webpack.config.js
-
-devServer: {
-  ...
-  hot: true
-},
-
-plugins: [
-  ...
-  new new webpack.HotModuleReplacementPlugin()
-]
-
-p.s.,
-if we want to use [chunkhash] later,
-HMR must be disabled, or compilation will fail.
-
-p.s.,
-it's OK to use [hash/contenthash] when HMR is enabled.
-
-p.s.,
-[hash] is used by file-loader
-[contenthash] is used by extract-text-plugin
-
-p.s.,
-cuz using HMR makes [chunkhash] useless and I possibly want to use [chunkhash],
-plus HMR is a bit complicated to set up,
-so I prefer not to use HMR
-
-p.s.,
-to me, using webpack-dev-server,
-which automatically watches files and refreshes pages for us,
-is good enough for developing
-
-and, for production,
-it's OK to use webpack without watching
-cuz we just use it to create some files in /dist
-
-==========
-
-[alias]
-
-- update webpack.config.js
-
-resolve: {
-  ...
-  alias: {
-    styles: path.resolve(SRC_DIR, 'styles')
-  }
-},
-
-==========
-
+/*
 [extract-text-plugin]
 
 > npm i -D extract-text-webpack-plugin
@@ -146,58 +78,96 @@ plugins: [
     allChunks: true
   })
 ]
+*/
 
-==========
+-----
 
-[SASS (pre-processors)]
+[MiniCssExtractPlugin]
 
-> npm i -D node-sass sass-loader
+it takes time to extract CSS
+don't do it in dev,
+only do it in prod
 
-- update webpack.config.js
+ref...
+https://webpack.js.org/plugins/mini-css-extract-plugin/
 
-replace
+> npm i -D mini-css-extract-plugin
 
-module: {
-  rules: [
-    ...
-    {
-      test: /\.css$/,
-      use: ExtractTextPlugin.extract ({
-        fallback: 'style-loader',
-        use: 'css-loader'
-      }),
-      include: SRC_DIR
-    }
+* update webpack.prod.config.js
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+module.exports = merge(base, {
+  mode: "production",
+  plugins: [
++   new MiniCssExtractPlugin ({
++     filename: '[name].[contentHash].css'
++   }),
+    new CleanWebpackPlugin()
   ]
-}
+});
 
-with
+* move the rule from base to dev...
 
-module: {
-  rules: [
-    ...
-    {
-      test: /\.(css|scss|sass)$/,
-      use: ExtractTextPlugin.extract ({
-        fallback: 'style-loader',
-        use: ['css-loader', 'sass-loader']
-      }),
-      include: SRC_DIR
-    }
-  ]
-}
+* update webpack.base.config.js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        include: SRC_DIR,
+        use: ['babel-loader']
+      },
+-     {
+-       test: /\.(css|scss|sass)$/, //test: /\.s[ac]ss$/i,
+-       include: SRC_DIR,
+-       use: [
+-         'style-loader', // Creates 'style' nodes from JS strings.
+-         'css-loader',   // Translates CSS into CommonJS.
+-         'sass-loader'   // Compiles SASS to CSS.
+-       ],
+-     }
+    ]
+  },
+};
 
-then replace CSS with SCSS
+* update webpack.dev.config.js
+module.exports = merge(base, {
++ module: {
++   rules: [
++     {
++       test: /\.(css|scss|sass)$/, //test: /\.s[ac]ss$/i,
++       include: SRC_DIR,
++       use: [
++         'style-loader', // Creates 'style' nodes from JS strings.
++         'css-loader',   // Translates CSS into CommonJS.
++         'sass-loader'   // Compiles SASS to CSS.
++       ],
++     }
++   ]
++ }
+});
 
-and remember to replace
+* lastly, update webpack.prod.config.js again
 
-e.g.
-import 'styles/main.css';
++ const SRC_DIR = path.resolve(__dirname, 'src');
 
-with
-import 'styles/main.scss';
+module.exports = merge(base, {
++ module: {
++   rules: [
++     {
++       test: /\.(css|scss|sass)$/, //test: /\.s[ac]ss$/i,
++       include: SRC_DIR,
++       use: [
++         MiniCssExtractPlugin.loader, // Extract CSS into files.
++         'css-loader',                // Translates CSS into CommonJS.
++         'sass-loader'                // Compiles SASS to CSS.
++       ],
++     }
++   ]
++ }
+});
 
-==========
+-----
 
 [PostCSS (autoprefixer)]
 
@@ -266,76 +236,7 @@ add
   "ie > 9"
 ],
 
-==========
-
-[file-loader]
-
-> npm i -D file-loader
-
-(in our sample, the 'file' to load in an image,
-so it's OK to use an image-related loader to load.
-but, for simplicity, we just use file-loader)
-
-- update webpack.config.js
-
-add
-
-module: {
-  rules: [
-    ...
-    {
-      test: /\.(jpe?g|png)$/,
-      use: ['file-loader'],
-      include: SRC_DIR
-    }
-  ]
-}
-
-where jpe?g means matching 'e' 0 or 1 time,
-that is, jpe?g = jpg or jpeg
-
-then...
-if we want to use alias,
-
-- update webpack.config.js
-
-resolve: {
-  alias: {
-    ...
-    images: path.resolve(SRC_DIR, 'assets/images')
-  }
-}
-
-and change our CSS (or SCSS)
-
-for instance,
-
-from
-
-body {
-  background: url('../assets/images/test.jpg');
-}
-
-to
-
-body {
-  background: url('~images/images/test.jpg');
-}
-
-not
-
-body {
-  background: url('images/images/test.jpg');
-}
-
-cuz CSS uses relative paths
-if we use url('images/images/test.jpg')
-CSS tries to resolve it to url('./images/images/test.jpg')
-
-but if we put '~' before the path,
-webpack knows we want to use the path in absolute way and will resolves it for us
-
-==========
+-----
 
 [minify CSS]
 

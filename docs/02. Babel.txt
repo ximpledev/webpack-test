@@ -10,6 +10,23 @@ to see the lastest ways of installing babel
 > npm i -D babel-loader @babel-core
 
 - update webpack.config.js
+
+there're 2 ways of updating it:
+
+#1: using include
+module.exports = {
++ module: {
++   rules: [
++     {
++       test: /\.js$/,
++       include: SRC_DIR,
++       loader: "babel-loader"
++     }
++   ]
++ }
+}
+
+#2: using exclude
 module.exports = {
 + module: {
 +   rules: [
@@ -21,6 +38,9 @@ module.exports = {
 +   ]
 + }
 }
+
+which is written in Babel's official docs,
+but i still prefer #1.
 
 -----
 
