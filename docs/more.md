@@ -1,3 +1,115 @@
+[PostCSS (autoprefixer)]
+
+> npm i -D autoprefixer postcss-loader
+
+- add postcss.config.js (option 1)
+
+module.exports = {
+  plugins: [
+    require('autoprefixer')
+  ]
+};
+
+or
+
+- update package.json (option 2)
+
+"postcss": {
+  "plugins": {
+    "autoprefixer": {}
+  }
+},
+
+(I prefer option 2)
+
+- update webpack.config.js
+
+replace
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|sass|scss)$/i,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: ['css-loader', 'sass-loader']
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+with
+
+module: {
+  rules: [
+    ...
+    {
+      test: /\.(css|sass|scss)$/i,
+      use: ExtractTextPlugin.extract ({
+        fallback: 'style-loader',
+        use: ['css-loader', 'postcss-loader', 'sass-loader']
+      }),
+      include: SRC_DIR
+    }
+  ]
+}
+
+- update package.json
+
+add
+
+"browserslist": [
+  "> 1%",
+  "ie > 9"
+],
+
+=====
+
+HMR (Hot Module Replacement)
+
+(optional)
+
+- update webpack.config.js
+
+devServer: {
+  ...
+  hot: true
+},
+
+plugins: [
+  ...
+  new new webpack.HotModuleReplacementPlugin()
+]
+
+p.s.,
+if we want to use [chunkhash] later,
+HMR must be disabled, or compilation will fail.
+
+p.s.,
+it's OK to use [hash/contenthash] when HMR is enabled.
+
+p.s.,
+[hash] is used by file-loader
+[contenthash] is used by extract-text-plugin
+
+p.s.,
+cuz using HMR makes [chunkhash] useless and I possibly want to use [chunkhash],
+plus HMR is a bit complicated to set up,
+so I prefer not to use HMR
+
+p.s.,
+to me, using webpack-dev-server,
+which automatically watches files and refreshes pages for us,
+is good enough for developing
+
+and, for production,
+it's OK to use webpack without watching
+cuz we just use it to create some files in /dist
+
+=====
+
 [build script]
 
 - update package.json
@@ -70,7 +182,7 @@ module: {
   rules: [
     ...
     {
-      test: /\.(css|scss|sass)$/,
+      test: /\.(css|sass|scss)$/i,
       use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
         use: [
@@ -96,7 +208,7 @@ module: {
   rules: [
     ...
     {
-      test: /\.(css|scss|sass)$/,
+      test: /\.(css|sass|scss)$/i,
       use: ExtractTextPlugin.extract ({
         fallback: 'style-loader',
         use: (
@@ -301,7 +413,7 @@ from
 module: {
   rules: [
   {
-    test: /\.(css|scss|sass)$/,
+    test: /\.(css|sass|scss)$/i,
     use: ExtractTextPlugin.extract ({
       fallback: 'style-loader',
       use: (
@@ -335,7 +447,7 @@ to
 module: {
   rules: [
   {
-    test: /\.(css|scss|sass)$/,
+    test: /\.(css|sass|scss)$/i,
     use: ExtractTextPlugin.extract ({
       fallback: 'style-loader',
       use: (
@@ -414,7 +526,7 @@ module: {
   rules: [
     ...
     {
-      test: /\.(jpe?g|png)$/,
+      test: /\.(jpe?g|png)$/i,
       use: ['file-loader'],
       include: SRC_DIR
     }
@@ -427,7 +539,7 @@ module: {
   rules: [
     ...
     {
-      test: /\.(jpe?g|png)$/,
+      test: /\.(jpe?g|png)$/i,
       use: [
         {
           loader: 'file-loader',
